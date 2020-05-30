@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:cotter/src/helper/crypto.dart';
 import 'package:cotter/src/helper/enum.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:cotter/src/cotter.dart';
 import 'package:cotter/src/models/verify.dart';
@@ -45,8 +46,12 @@ class API {
       req.response = resp;
       return req;
     } else {
-      throw Exception('Failed to make a verification request: ' +
-          json.decode(response.body));
+      var respStr = json.decode(response.body.toString());
+      if (respStr["msg"] != null) {
+        throw ErrorDescription(respStr["msg"]);
+      } else {
+        throw Exception('Failed to make a verification respond: $respStr');
+      }
     }
   }
 
@@ -68,9 +73,12 @@ class API {
       }
       return resp;
     } else {
-      var respStr = jsonDecode(response.body);
-      log('data: $respStr');
-      throw Exception('Failed to make a verification respond: ');
+      var respStr = json.decode(response.body.toString());
+      if (respStr["msg"] != null) {
+        throw ErrorDescription(respStr["msg"]);
+      } else {
+        throw Exception('Failed to make a verification respond: $respStr');
+      }
     }
   }
 
