@@ -13,13 +13,21 @@ class Token {
 
   static Future<void> store(OAuthToken oAuthToken) async {
     Token.oAuthToken = oAuthToken;
-    await Storage.write(key: ACCESS_TOKEN_KEY, value: oAuthToken.accessToken);
-    await Storage.write(key: REFRESH_TOKEN_KEY, value: oAuthToken.refreshToken);
-    await Storage.write(key: ID_TOKEN_KEY, value: oAuthToken.idToken);
-    await Storage.write(key: TOKEN_TYPE_KEY, value: oAuthToken.tokenType);
-
-    Token.accessToken = new CotterAccessToken(token: oAuthToken.accessToken);
-    Token.idToken = new CotterIDToken(token: oAuthToken.idToken);
+    if (oAuthToken.accessToken != null && oAuthToken.accessToken.length > 0) {
+      await Storage.write(key: ACCESS_TOKEN_KEY, value: oAuthToken.accessToken);
+      Token.accessToken = new CotterAccessToken(token: oAuthToken.accessToken);
+    }
+    if (oAuthToken.refreshToken != null && oAuthToken.refreshToken.length > 0) {
+      await Storage.write(
+          key: REFRESH_TOKEN_KEY, value: oAuthToken.refreshToken);
+    }
+    if (oAuthToken.idToken != null && oAuthToken.idToken.length > 0) {
+      await Storage.write(key: ID_TOKEN_KEY, value: oAuthToken.idToken);
+      Token.idToken = new CotterIDToken(token: oAuthToken.idToken);
+    }
+    if (oAuthToken.tokenType != null && oAuthToken.tokenType.length > 0) {
+      await Storage.write(key: TOKEN_TYPE_KEY, value: oAuthToken.tokenType);
+    }
   }
 
   static Future<CotterAccessToken> getAccessToken(String apiKeyID) async {

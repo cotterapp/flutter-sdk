@@ -185,26 +185,29 @@ class Device {
       closed.then((value) => canceler.cancel());
 
       Event ev = await pollGetEvent(
-        eventID: event.id.toString(),
+        event: event,
         canceler: canceler,
         onFinished: () {
           Navigator.pop(context);
         },
       );
+      if (ev == null) {
+        throw "Event is null";
+      }
       return ev;
     }
     return event;
   }
 
   Future<Event> pollGetEvent(
-      {@required String eventID,
+      {@required Event event,
       @required Canceler canceler,
       @required Function onFinished}) async {
     int tick = 0;
-    Event ev;
+    Event ev = event;
     while (tick < AuthRequestDuration && !canceler.canceled) {
       API api = new API(apiKeyID: this.apiKeyID);
-      var resp = await api.getEvent(eventID);
+      var resp = await api.getEvent(event.id.toString());
       if (resp["approved"]) {
         ev = Event.fromJson(resp);
         OAuthToken oAuthToken = OAuthToken.fromJson(resp["oauth_token"]);
@@ -264,7 +267,6 @@ class Device {
   }
 
   Future<bool> isThisDeviceTrusted({@required String cotterUserID}) async {
-    print(this.apiKeyID);
     API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(cotterUserID);
     return await api.checkEnrolledMethodWithCotterUserID(

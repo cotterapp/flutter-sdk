@@ -63,7 +63,7 @@ class API {
     bool changeCode = false,
     String currentCode,
   }) async {
-    String url = "${Cotter.baseURL}/user/$clientUserID";
+    String url = "${Cotter.baseURL}/user/$clientUserID?oauth_token=true";
     return await updateMethods(
         url: url,
         method: method,
@@ -83,7 +83,8 @@ class API {
     bool changeCode = false,
     String currentCode,
   }) async {
-    String url = "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID";
+    String url =
+        "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID&oauth_token=true";
     return await updateMethods(
         url: url,
         method: method,
@@ -161,9 +162,6 @@ class API {
 
   Future<bool> checkEnrolledMethod(
       {@required String url, @required String method}) async {
-    print("checkEnrolledMethod");
-    print(this.apiKeyID);
-    print(url);
     final http.Response response = await http.get(url, headers: this.headers());
 
     if (response.statusCode == 200) {
