@@ -1,7 +1,6 @@
 name: cotter
 description: Flutter SDK for Cotter's Passwordless Authentication Service.
 version: 0.0.1
-author:
 homepage: https://www.cotter.app
 
 environment:
@@ -17,6 +16,7 @@ dependencies:
   email_validator: ^1.0.4
   jose: ^0.1.2+1
   async: ^2.4.1
+  meta: ^1.1.8
 
 dev_dependencies:
   flutter_test:
