@@ -1,7 +1,7 @@
 library cotter;
 
 export 'src/cotter.dart';
-export 'src/models/verify.dart';
-export 'src/widgets/keyboard.dart';
-export 'src/widgets/codeinput.dart';
-export 'src/models/verifyStrings.dart';
+export 'src/models/user.dart';
+export 'src/models/event.dart';
+export 'src/tokens/cotterAccessToken.dart';
+export 'src/tokens/cotterIDToken.dart';

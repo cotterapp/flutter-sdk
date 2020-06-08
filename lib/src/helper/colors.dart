@@ -8,6 +8,7 @@ class CotterColors {
   Color light;
   Color darker;
   Color error;
+  Color success;
   Color text;
   Color textInvert;
   Color grey;
@@ -20,6 +21,7 @@ class CotterColors {
     this.light = const Color(0xFFF3F3F3);
     this.darker = const Color(0x13000000);
     this.error = const Color(0xFFF4416E);
+    this.success = Colors.greenAccent;
     if (this.darkTheme) {
       this.text = Colors.white;
       this.textInvert = Colors.black;

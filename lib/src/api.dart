@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:developer';
 
-import 'package:cotter/src/helper/crypto.dart';
+import 'package:cotter/cotter.dart';
 import 'package:cotter/src/helper/enum.dart';
+import 'package:cotter/src/models/user.dart';
+import 'package:cotter/src/tokens/oAuthToken.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:cotter/src/cotter.dart';
-import 'package:cotter/src/models/verify.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -25,60 +25,256 @@ class API {
     return headers;
   }
 
-  Future<VerifyRequest> verifyRequest(String identifier, String identifierType,
-      String pubKey, String sessionID) async {
-    VerifyRequest req = new VerifyRequest(
-        identifier: identifier,
-        identifierType: identifierType,
-        publicKey: pubKey,
-        deviceName: await this.getDeviceName(),
-        deviceType: this.getDeviceType(),
-        sessionID: sessionID);
-
-    String url = Cotter.baseURL + "/verify/request/" + sessionID;
-
-    final http.Response response = await http.post(url,
-        headers: this.headers(), body: jsonEncode(req.toJson()));
-
-    if (response.statusCode == 200) {
-      VerifyRequestResponse resp =
-          VerifyRequestResponse.fromJson(json.decode(response.body));
-      req.response = resp;
-      return req;
-    } else {
-      var respStr = json.decode(response.body.toString());
-      if (respStr["msg"] != null) {
-        throw ErrorDescription(respStr["msg"]);
-      } else {
-        throw Exception('Failed to make a verification respond: $respStr');
-      }
-    }
-  }
-
-  verifyRespond({@required Map<String, dynamic> req}) async {
-    var state = Crypto.randomString(5);
-    String url =
-        Cotter.baseURL + "/verify/respond/" + state + "?oauth_token=true";
+  Future<User> registerUserToCotter(String identifier) async {
+    String url = '${Cotter.baseURL}/user/create';
+    Map<String, dynamic> req = {
+      "identifier": identifier,
+    };
 
     final http.Response response =
         await http.post(url, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> resp = json.decode(response.body);
-      var body = response.body;
-      log('data: $body');
-      if (resp["state"] != state) {
-        throw Exception(
-            'State received in the response is not the same as requested');
-      }
+      User resp = User.fromJson(json.decode(response.body));
       return resp;
     } else {
-      var respStr = json.decode(response.body.toString());
-      if (respStr["msg"] != null) {
-        throw ErrorDescription(respStr["msg"]);
-      } else {
-        throw Exception('Failed to make a verification respond: $respStr');
+      return _handleError(response);
+    }
+  }
+
+  Future<User> getUserByIdentifier(String identifier) async {
+    String url = '${Cotter.baseURL}/user?identifier=$identifier';
+    final http.Response response = await http.get(url, headers: this.headers());
+
+    if (response.statusCode == 200) {
+      User resp = User.fromJson(json.decode(response.body));
+      return resp;
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateMethodsWithClientUserID({
+    @required String clientUserID,
+    @required String method,
+    @required bool enrolled,
+    @required String code, // Code for PIN or Public Key
+    String algorithm,
+    bool changeCode = false,
+    String currentCode,
+  }) async {
+    String url = "${Cotter.baseURL}/user/$clientUserID";
+    return await updateMethods(
+        url: url,
+        method: method,
+        enrolled: enrolled,
+        code: code,
+        algorithm: algorithm,
+        changeCode: changeCode,
+        currentCode: currentCode);
+  }
+
+  Future<Map<String, dynamic>> updateMethodsWithCotterUserID({
+    @required String cotterUserID,
+    @required String method,
+    @required bool enrolled,
+    @required String code, // Code for PIN or Public Key
+    String algorithm,
+    bool changeCode = false,
+    String currentCode,
+  }) async {
+    String url = "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID";
+    return await updateMethods(
+        url: url,
+        method: method,
+        enrolled: enrolled,
+        code: code,
+        algorithm: algorithm,
+        changeCode: changeCode,
+        currentCode: currentCode);
+  }
+
+  Future<Map<String, dynamic>> updateMethods({
+    @required String url,
+    @required String method,
+    @required bool enrolled,
+    @required String code, // Code for PIN or Public Key
+    String algorithm,
+    bool changeCode = false,
+    String currentCode,
+  }) async {
+    Map<String, dynamic> req = {
+      "method": method,
+      "enrolled": enrolled,
+      "code": code, // Code for PIN or Public Key
+
+      // for Trusted Devices
+      "device_type": this.getDeviceType(),
+      "device_name": await this.getDeviceName(),
+      "algorithm": algorithm,
+
+      // updating code
+      "change_code": changeCode,
+      "current_code": currentCode,
+    };
+
+    final http.Response response =
+        await http.put(url, headers: this.headers(), body: jsonEncode(req));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      _handleError(response);
+    }
+  }
+
+  Future<bool> checkEnrolledMethodWithCotterUserID({
+    @required String cotterUserID,
+    @required String method,
+    String pubKey,
+  }) async {
+    String url =
+        "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID&method=$method";
+    if (pubKey != null) {
+      var bytes = utf8.encode(pubKey);
+      var pubKeyB64 = base64Encode(bytes);
+      url = "$url&public_key=$pubKeyB64";
+    }
+
+    return await checkEnrolledMethod(url: url, method: method);
+  }
+
+  Future<bool> checkEnrolledMethodWithClientUserID({
+    @required String clientUserID,
+    @required String method,
+    String pubKey,
+  }) async {
+    String url = "${Cotter.baseURL}/user/enrolled/$clientUserID/$method";
+    if (pubKey != null) {
+      var bytes = utf8.encode(pubKey);
+      var pubKeyB64 = base64Encode(bytes);
+      url = "$url/$pubKeyB64";
+    }
+
+    return await checkEnrolledMethod(url: url, method: method);
+  }
+
+  Future<bool> checkEnrolledMethod(
+      {@required String url, @required String method}) async {
+    print("checkEnrolledMethod");
+    print(this.apiKeyID);
+    print(url);
+    final http.Response response = await http.get(url, headers: this.headers());
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> resp = json.decode(response.body);
+      if (resp["method"] == method && resp["enrolled"] != null) {
+        return resp["enrolled"];
       }
+      return false;
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<Map<String, dynamic>> createApprovedEventRequest(
+      Map<String, dynamic> req) async {
+    var path = '/event/create?oauth_token=true';
+    return createEventRequest(path, req);
+  }
+
+  Future<Map<String, dynamic>> createPendingEventRequest(
+      Map<String, dynamic> req) async {
+    var path = '/event/create_pending';
+    return createEventRequest(path, req);
+  }
+
+  Future<Event> createRespondEventRequest(
+      String eventID, Map<String, dynamic> req) async {
+    var path = '/event/respond/$eventID';
+    var resp = await createEventRequest(path, req);
+    return Event.fromJson(resp);
+  }
+
+  Future<Map<String, dynamic>> createEventRequest(
+      String path, Map<String, dynamic> req) async {
+    final http.Response response = await http.post("${Cotter.baseURL}$path",
+        headers: this.headers(), body: jsonEncode(req));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<OAuthToken> getTokensFromRefreshToken(String refreshToken) async {
+    var path = '/token';
+    Map<String, dynamic> req = {
+      'grant_type': 'refresh_token',
+      'refresh_token': refreshToken,
+    };
+
+    final http.Response response = await http.post("${Cotter.baseURL}$path",
+        headers: this.headers(), body: jsonEncode(req));
+
+    if (response.statusCode == 200) {
+      var resp = json.decode(response.body);
+      OAuthToken oAuthToken = OAuthToken.fromJson(resp);
+      return oAuthToken;
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<Map<String, dynamic>> getEvent(String eventID) async {
+    var path = '/event/get/$eventID?oauth_token=true';
+
+    final http.Response response =
+        await http.get("${Cotter.baseURL}$path", headers: this.headers());
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<Event> checkNewEvent({
+    String cotterUserID,
+    String clientUserID,
+  }) async {
+    var path = '/event/new';
+    if (cotterUserID != null) {
+      path = '$path?cotter_user_id=$cotterUserID';
+    } else if (clientUserID != null) {
+      path = '$path?client_user_id=$clientUserID';
+    } else {
+      throw "Cotter user ID and client user ID can't both be null, please specify one of them";
+    }
+
+    final http.Response response =
+        await http.get("${Cotter.baseURL}$path", headers: this.headers());
+
+    if (response.statusCode == 200) {
+      var resp = json.decode(response.body);
+      if (resp == null) {
+        return null;
+      }
+      Event event = Event.fromJson(resp);
+      return event;
+    } else {
+      return _handleError(response);
+    }
+  }
+  // ========== HELPER METHODS ==========
+
+  Future<dynamic> _handleError(http.Response response) {
+    var respStr = json.decode(response.body.toString());
+    if (respStr["msg"] != null) {
+      throw respStr["msg"];
+    } else {
+      throw 'Failed to request: $respStr';
     }
   }
 
@@ -100,4 +296,25 @@ class API {
   String getDeviceType() {
     return Mobile;
   }
+
+  Future<IPLocation> getIPAddress() async {
+    final http.Response response = await http.get('http://geoip-db.com/json/');
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> resp = json.decode(response.body);
+      return IPLocation(ip: resp["IPv4"], location: resp["city"]);
+    } else {
+      return _handleError(response);
+    }
+  }
+}
+
+class IPLocation {
+  String ip;
+  String location;
+
+  IPLocation({
+    this.ip = 'unknown',
+    this.location = 'unknown',
+  });
 }
