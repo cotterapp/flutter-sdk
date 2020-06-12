@@ -75,6 +75,11 @@ class Device {
   Future<User> signUpWithDevice({@required String identifier}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     User user = await api.registerUserToCotter(identifier);
+    return await this.registerDevice(user: user);
+  }
+
+  Future<User> registerDevice({@required User user}) async {
+    API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(user.id);
 
     try {

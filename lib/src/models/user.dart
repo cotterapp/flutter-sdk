@@ -74,7 +74,7 @@ class User {
   // Sign up with this device, identifier can be user's email, phone, or any string to identify your user
   Future<User> registerDevice() {
     Device device = new Device(apiKeyID: this.issuer);
-    return device.signUpWithDevice(identifier: this.identifier);
+    return device.registerDevice(user: this);
   }
 
   Future<Event> checkNewSignInRequest({@required BuildContext context}) {

@@ -178,13 +178,13 @@ class API {
   Future<Map<String, dynamic>> createApprovedEventRequest(
       Map<String, dynamic> req) async {
     var path = '/event/create?oauth_token=true';
-    return createEventRequest(path, req);
+    return await createEventRequest(path, req);
   }
 
   Future<Map<String, dynamic>> createPendingEventRequest(
       Map<String, dynamic> req) async {
     var path = '/event/create_pending';
-    return createEventRequest(path, req);
+    return await createEventRequest(path, req);
   }
 
   Future<Event> createRespondEventRequest(
