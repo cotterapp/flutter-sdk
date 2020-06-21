@@ -5,11 +5,11 @@ import 'package:example/dashboard.dart';
 import 'package:example/main.dart';
 
 void main() {
-  runApp(Register());
+  runApp(RegisterWithPhoneVerification());
 }
 
-class Register extends StatelessWidget {
-  static const routeName = '/register';
+class RegisterWithPhoneVerification extends StatelessWidget {
+  static const routeName = '/register_with_phone_verification';
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class Register extends StatelessWidget {
               margin: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.bottomLeft,
               child: Text(
-                "Create a user and trust this device.",
+                "Verify user's phone number. If successful, create a user and trust this device.",
                 style: TextStyle(fontSize: 15, color: Colors.grey),
                 textAlign: TextAlign.left,
               ),
@@ -79,17 +79,19 @@ class InputFormState extends State<InputForm> {
     super.initState();
   }
 
-  void signUp() async {
+  void signUp(String channel) async {
     try {
-      // String str = await her();
-      // print(str);
-      var user =
-          await cotter.signUpWithDevice(identifier: inputController.text);
-      print("user");
-      print(user);
-      var cotterUser = await cotter.getUser();
-      print("cotterUser");
-      print(cotterUser);
+      User user;
+      if (channel == "SMS") {
+        user = await cotter.signUpWithPhoneViaSMS(
+            redirectURL: "myexample://auth_callback",
+            phone: inputController.text);
+      } else {
+        user = await cotter.signUpWithPhoneViaWhatsApp(
+            redirectURL: "myexample://auth_callback",
+            phone: inputController.text);
+      }
+      user = await user.registerDevice();
       _goToDashboard();
     } catch (e) {
       showDialog<void>(
@@ -97,7 +99,7 @@ class InputFormState extends State<InputForm> {
           barrierDismissible: true, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error Signing Up'),
+              title: Text('Error Registering User'),
               content: Text(e.toString()),
             );
           });
@@ -105,7 +107,33 @@ class InputFormState extends State<InputForm> {
     }
   }
 
-  void signIn(BuildContext context) async {
+  void signInWithPhone(String channel) async {
+    try {
+      if (channel == "SMS") {
+        await cotter.signInWithPhoneViaSMS(
+            redirectURL: "myexample://auth_callback",
+            phone: inputController.text);
+      } else {
+        await cotter.signInWithPhoneViaWhatsApp(
+            redirectURL: "myexample://auth_callback",
+            phone: inputController.text);
+      }
+      _goToDashboard();
+    } catch (e) {
+      showDialog<void>(
+          context: context,
+          barrierDismissible: true, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error signing in with Phone'),
+              content: Text(e.toString()),
+            );
+          });
+      print(e);
+    }
+  }
+
+  void signInWithDevice(BuildContext context) async {
     // await hello(context);
     try {
       var event = await cotter.signInWithDevice(
@@ -123,7 +151,7 @@ class InputFormState extends State<InputForm> {
           barrierDismissible: true, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error Signing In'),
+              title: Text('Error signing in with device'),
               content: Text(e.toString()),
             );
           });
@@ -143,7 +171,7 @@ class InputFormState extends State<InputForm> {
             key: _formKey,
             child: TextField(
               decoration: InputDecoration(
-                labelText: "Email",
+                labelText: "Phone",
               ),
               controller: inputController,
             ),
@@ -156,9 +184,9 @@ class InputFormState extends State<InputForm> {
                   minWidth: double.infinity,
                   child: MaterialButton(
                     onPressed: () {
-                      signUp();
+                      signUp("SMS");
                     },
-                    child: Text("Sign Up"),
+                    child: Text("Sign Up via SMS"),
                     color: colors["primary"],
                     textColor: Colors.white,
                   ),
@@ -167,7 +195,29 @@ class InputFormState extends State<InputForm> {
                   minWidth: double.infinity,
                   child: MaterialButton(
                     onPressed: () {
-                      signIn(context);
+                      signUp("WHATSAPP");
+                    },
+                    child: Text("Sign Up via WhatsApp"),
+                    color: colors["primary"],
+                    textColor: Colors.white,
+                  ),
+                ),
+                ButtonTheme(
+                  minWidth: double.infinity,
+                  child: MaterialButton(
+                    onPressed: () {
+                      signInWithPhone("SMS");
+                    },
+                    child: Text("Sign In via SMS"),
+                    color: Colors.white,
+                    textColor: colors["primary"],
+                  ),
+                ),
+                ButtonTheme(
+                  minWidth: double.infinity,
+                  child: MaterialButton(
+                    onPressed: () {
+                      signInWithDevice(context);
                     },
                     child: Text("Sign In With Device"),
                     color: Colors.white,

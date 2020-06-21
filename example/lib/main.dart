@@ -2,6 +2,8 @@ import 'package:cotter/cotter.dart';
 import 'package:example/apikeys.dart';
 import 'package:example/dashboard.dart';
 import 'package:example/register.dart';
+import 'package:example/registerWithEmailVerification.dart';
+import 'package:example/registerWithPhoneVerification.dart';
 import 'package:flutter/material.dart';
 
 var colors = {
@@ -31,6 +33,10 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         Dashboard.routeName: (context) => Dashboard(),
         Register.routeName: (context) => Register(),
+        RegisterWithEmailVerification.routeName: (context) =>
+            RegisterWithEmailVerification(),
+        RegisterWithPhoneVerification.routeName: (context) =>
+            RegisterWithPhoneVerification(),
       },
     );
   }
@@ -44,6 +50,14 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     void _goToRegister() {
       Navigator.pushNamed(context, Register.routeName);
+    }
+
+    void _goToRegisterWithEmailVerification() {
+      Navigator.pushNamed(context, RegisterWithEmailVerification.routeName);
+    }
+
+    void _goToRegisterWithPhoneVerification() {
+      Navigator.pushNamed(context, RegisterWithPhoneVerification.routeName);
     }
 
     void _goToDashboard() {
@@ -84,7 +98,29 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           _goToRegister();
                         },
-                        child: Text("Sign In"),
+                        child: Text("Sign Up With Device"),
+                        color: colors["primary"],
+                        textColor: Colors.white,
+                      ),
+                    ),
+                    ButtonTheme(
+                      minWidth: double.infinity,
+                      child: MaterialButton(
+                        onPressed: () {
+                          _goToRegisterWithEmailVerification();
+                        },
+                        child: Text("Sign Up With Email"),
+                        color: colors["primary"],
+                        textColor: Colors.white,
+                      ),
+                    ),
+                    ButtonTheme(
+                      minWidth: double.infinity,
+                      child: MaterialButton(
+                        onPressed: () {
+                          _goToRegisterWithPhoneVerification();
+                        },
+                        child: Text("Sign Up With Phone"),
                         color: colors["primary"],
                         textColor: Colors.white,
                       ),

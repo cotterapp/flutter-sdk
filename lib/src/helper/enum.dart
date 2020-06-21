@@ -1,4 +1,5 @@
 const CotterBaseURL = 'https://www.cotter.app/api/v0';
+const CotterJSBaseURL = 'https://js.cotter.app/app';
 const EmailType = "EMAIL";
 const PhoneType = "PHONE";
 const Mobile = "MOBILE";
@@ -16,3 +17,11 @@ const ID_TOKEN_KEY = 'ID_TOKEN';
 const TOKEN_TYPE_KEY = 'TOKEN_TYPE';
 
 const AuthRequestDuration = 3 * 60;
+
+const VERIFICATION_STATE_LENGTH = 10;
+const SMS = "SMS";
+const WHATSAPP = "WHATSAPP";
+enum PhoneChannel { SMS, WHATSAPP }
+
+const DefaultPhoneChannel = PhoneChannel.SMS;
+const DefaultPhoneChannels = [PhoneChannel.SMS, PhoneChannel.WHATSAPP];

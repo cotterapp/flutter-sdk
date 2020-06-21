@@ -56,6 +56,7 @@ class UserProfileState extends State<UserProfile> {
   User user;
   bool loading = true;
   String error;
+  String redirectURL = "myexample://auth_callback";
 
   void resetError() {
     setState(() {
@@ -86,11 +87,31 @@ class UserProfileState extends State<UserProfile> {
     }
   }
 
+  void verifyEmail() async {
+    try {
+      user = await user.verifyEmail(redirectURL: redirectURL);
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+      });
+    }
+  }
+
+  void verifyPhoneViaWhatsApp() async {
+    try {
+      user = await user.verifyPhoneViaWhatsApp(redirectURL: redirectURL);
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(vertical: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,12 +123,31 @@ class UserProfileState extends State<UserProfile> {
               fontSize: 18,
             ),
           ),
-          Text(loading ? "loading..." : ""),
+          Text(loading ? "loading..." : error != null ? error : ""),
           user != null ? Text("ID: ${user.id}") : Text(""),
           user != null ? Text("Identifier: ${user.identifier}") : Text(""),
           user != null ? Text("Issuer: ${user.issuer}") : Text(""),
           user == null ? Text("User is not logged in") : Text(""),
-          Text(error),
+          Container(
+            child: MaterialButton(
+              onPressed: () {
+                verifyEmail();
+              },
+              child: Text("Verify Email"),
+              color: colors["primary"],
+              textColor: Colors.white,
+            ),
+          ),
+          Container(
+            child: MaterialButton(
+              onPressed: () {
+                verifyPhoneViaWhatsApp();
+              },
+              child: Text("Verify Phone via WhatsApp"),
+              color: colors["primary"],
+              textColor: Colors.white,
+            ),
+          ),
         ],
       ),
     );

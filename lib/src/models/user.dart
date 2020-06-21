@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cotter/cotter.dart';
 import 'package:cotter/src/handlers/device.dart';
 import 'package:cotter/src/handlers/token.dart';
+import 'package:cotter/src/handlers/verify.dart';
 import 'package:cotter/src/helper/enum.dart';
 import 'package:cotter/src/helper/storage.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class User {
     return user;
   }
 
-  // ========= Authentication Methods ==========
+  // ========= Authentication Methods: Device Based ==========
 
   // Sign up with this device, identifier can be user's email, phone, or any string to identify your user
   Future<User> registerDevice() {
@@ -89,5 +90,29 @@ class User {
   Future<bool> isThisDeviceTrusted() async {
     Device device = new Device(apiKeyID: this.issuer);
     return await device.isThisDeviceTrusted(cotterUserID: this.id);
+  }
+
+  // ========= Authentication Methods: Email / Phone Based ==========
+  Future<User> verifyEmail({@required String redirectURL}) {
+    Verify verify = new Verify(apiKeyID: this.issuer);
+    return verify.verifyEmail(redirectURL: redirectURL, email: this.identifier);
+  }
+
+  Future<User> verifyPhoneViaSMS({@required String redirectURL}) {
+    Verify verify = new Verify(apiKeyID: this.issuer);
+    return verify.verifyPhone(
+      redirectURL: redirectURL,
+      phone: this.identifier,
+      channel: PhoneChannel.SMS,
+    );
+  }
+
+  Future<User> verifyPhoneViaWhatsApp({@required String redirectURL}) {
+    Verify verify = new Verify(apiKeyID: this.issuer);
+    return verify.verifyPhone(
+      redirectURL: redirectURL,
+      phone: this.identifier,
+      channel: PhoneChannel.WHATSAPP,
+    );
   }
 }

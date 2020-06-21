@@ -5,11 +5,11 @@ import 'package:example/dashboard.dart';
 import 'package:example/main.dart';
 
 void main() {
-  runApp(Register());
+  runApp(RegisterWithEmailVerification());
 }
 
-class Register extends StatelessWidget {
-  static const routeName = '/register';
+class RegisterWithEmailVerification extends StatelessWidget {
+  static const routeName = '/register_with_email_verification';
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class Register extends StatelessWidget {
               margin: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.bottomLeft,
               child: Text(
-                "Create a user and trust this device.",
+                "Verify user's email. If successful, create a user and trust this device.",
                 style: TextStyle(fontSize: 15, color: Colors.grey),
                 textAlign: TextAlign.left,
               ),
@@ -81,15 +81,10 @@ class InputFormState extends State<InputForm> {
 
   void signUp() async {
     try {
-      // String str = await her();
-      // print(str);
-      var user =
-          await cotter.signUpWithDevice(identifier: inputController.text);
-      print("user");
-      print(user);
-      var cotterUser = await cotter.getUser();
-      print("cotterUser");
-      print(cotterUser);
+      var user = await cotter.signUpWithEmail(
+          redirectURL: "myexample://auth_callback",
+          email: inputController.text);
+      user = await user.registerDevice();
       _goToDashboard();
     } catch (e) {
       showDialog<void>(
@@ -97,7 +92,7 @@ class InputFormState extends State<InputForm> {
           barrierDismissible: true, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error Signing Up'),
+              title: Text('Error Registering User'),
               content: Text(e.toString()),
             );
           });
@@ -105,7 +100,27 @@ class InputFormState extends State<InputForm> {
     }
   }
 
-  void signIn(BuildContext context) async {
+  void signInWithEmail() async {
+    try {
+      await cotter.signInWithEmail(
+          redirectURL: "myexample://auth_callback",
+          email: inputController.text);
+      _goToDashboard();
+    } catch (e) {
+      showDialog<void>(
+          context: context,
+          barrierDismissible: true, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error signing in with email'),
+              content: Text(e.toString()),
+            );
+          });
+      print(e);
+    }
+  }
+
+  void signInWithDevice(BuildContext context) async {
     // await hello(context);
     try {
       var event = await cotter.signInWithDevice(
@@ -123,7 +138,7 @@ class InputFormState extends State<InputForm> {
           barrierDismissible: true, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error Signing In'),
+              title: Text('Error signing in with device'),
               content: Text(e.toString()),
             );
           });
@@ -167,7 +182,18 @@ class InputFormState extends State<InputForm> {
                   minWidth: double.infinity,
                   child: MaterialButton(
                     onPressed: () {
-                      signIn(context);
+                      signInWithEmail();
+                    },
+                    child: Text("Sign In With Email"),
+                    color: Colors.white,
+                    textColor: colors["primary"],
+                  ),
+                ),
+                ButtonTheme(
+                  minWidth: double.infinity,
+                  child: MaterialButton(
+                    onPressed: () {
+                      signInWithDevice(context);
                     },
                     child: Text("Sign In With Device"),
                     color: Colors.white,

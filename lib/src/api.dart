@@ -43,7 +43,8 @@ class API {
   }
 
   Future<User> getUserByIdentifier(String identifier) async {
-    String url = '${Cotter.baseURL}/user?identifier=$identifier';
+    String url =
+        '${Cotter.baseURL}/user?identifier=${Uri.encodeComponent(identifier)}';
     final http.Response response = await http.get(url, headers: this.headers());
 
     if (response.statusCode == 200) {
@@ -261,6 +262,32 @@ class API {
       }
       Event event = Event.fromJson(resp);
       return event;
+    } else {
+      return _handleError(response);
+    }
+  }
+
+  Future<Map<String, dynamic>> getIdentity(
+    String authCode,
+    String state,
+    String challengeID,
+    String codeVerifier,
+    String redirectURL,
+  ) async {
+    var path = '/verify/get_identity?oauth_token=true';
+
+    var req = {
+      "code_verifier": codeVerifier,
+      "authorization_code": authCode,
+      "challenge_id": int.parse(challengeID),
+      "redirect_url": redirectURL,
+    };
+
+    final http.Response response = await http.post("${Cotter.baseURL}$path",
+        headers: this.headers(), body: jsonEncode(req));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
     } else {
       return _handleError(response);
     }
