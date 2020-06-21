@@ -93,12 +93,12 @@ class User {
   }
 
   // ========= Authentication Methods: Email / Phone Based ==========
-  Future<User> verifyEmail({@required String redirectURL}) {
+  Future<User> verifyEmailWithOTP({@required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
     return verify.verifyEmail(redirectURL: redirectURL, email: this.identifier);
   }
 
-  Future<User> verifyPhoneViaSMS({@required String redirectURL}) {
+  Future<User> verifyPhoneWithOTPViaSMS({@required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
     return verify.verifyPhone(
       redirectURL: redirectURL,
@@ -107,7 +107,7 @@ class User {
     );
   }
 
-  Future<User> verifyPhoneViaWhatsApp({@required String redirectURL}) {
+  Future<User> verifyPhoneWithOTPViaWhatsApp({@required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
     return verify.verifyPhone(
       redirectURL: redirectURL,

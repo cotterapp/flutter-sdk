@@ -81,9 +81,10 @@ class InputFormState extends State<InputForm> {
 
   void signUp() async {
     try {
-      var user = await cotter.signUpWithEmail(
-          redirectURL: "myexample://auth_callback",
-          email: inputController.text);
+      var user = await cotter.signUpWithEmailOTP(
+        redirectURL: "myexample://auth_callback",
+        email: inputController.text,
+      );
       user = await user.registerDevice();
       _goToDashboard();
     } catch (e) {
@@ -102,9 +103,10 @@ class InputFormState extends State<InputForm> {
 
   void signInWithEmail() async {
     try {
-      await cotter.signInWithEmail(
-          redirectURL: "myexample://auth_callback",
-          email: inputController.text);
+      var user = await cotter.signInWithEmailOTP(
+        redirectURL: "myexample://auth_callback",
+        email: inputController.text,
+      );
       _goToDashboard();
     } catch (e) {
       showDialog<void>(

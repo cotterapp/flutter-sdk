@@ -83,13 +83,15 @@ class InputFormState extends State<InputForm> {
     try {
       User user;
       if (channel == "SMS") {
-        user = await cotter.signUpWithPhoneViaSMS(
-            redirectURL: "myexample://auth_callback",
-            phone: inputController.text);
+        user = await cotter.signUpWithPhoneOTPViaSMS(
+          redirectURL: "myexample://auth_callback",
+          phone: inputController.text,
+        );
       } else {
-        user = await cotter.signUpWithPhoneViaWhatsApp(
-            redirectURL: "myexample://auth_callback",
-            phone: inputController.text);
+        user = await cotter.signUpWithPhoneOTPViaWhatsApp(
+          redirectURL: "myexample://auth_callback",
+          phone: inputController.text,
+        );
       }
       user = await user.registerDevice();
       _goToDashboard();
@@ -110,13 +112,15 @@ class InputFormState extends State<InputForm> {
   void signInWithPhone(String channel) async {
     try {
       if (channel == "SMS") {
-        await cotter.signInWithPhoneViaSMS(
-            redirectURL: "myexample://auth_callback",
-            phone: inputController.text);
+        await cotter.signInWithPhoneOTPViaSMS(
+          redirectURL: "myexample://auth_callback",
+          phone: inputController.text,
+        );
       } else {
-        await cotter.signInWithPhoneViaWhatsApp(
-            redirectURL: "myexample://auth_callback",
-            phone: inputController.text);
+        await cotter.signInWithPhoneOTPViaWhatsApp(
+          redirectURL: "myexample://auth_callback",
+          phone: inputController.text,
+        );
       }
       _goToDashboard();
     } catch (e) {

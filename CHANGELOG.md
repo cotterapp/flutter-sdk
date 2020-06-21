@@ -7,3 +7,8 @@
 ## 0.0.2
 
 * Fix `signInWithDevice` error handling.
+
+
+## 0.1.0
+
+* Implement sign in with email and phone number.

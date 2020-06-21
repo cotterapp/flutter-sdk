@@ -89,7 +89,7 @@ class UserProfileState extends State<UserProfile> {
 
   void verifyEmail() async {
     try {
-      user = await user.verifyEmail(redirectURL: redirectURL);
+      user = await user.verifyEmailWithOTP(redirectURL: redirectURL);
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -99,7 +99,7 @@ class UserProfileState extends State<UserProfile> {
 
   void verifyPhoneViaWhatsApp() async {
     try {
-      user = await user.verifyPhoneViaWhatsApp(redirectURL: redirectURL);
+      user = await user.verifyPhoneWithOTPViaWhatsApp(redirectURL: redirectURL);
     } catch (e) {
       setState(() {
         error = e.toString();

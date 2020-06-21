@@ -85,14 +85,16 @@ class Cotter {
   // ===== Authentication Methods: Email / Phone Number Based =====
 
   // Verify user's email, then create a user if email verification is successful
-  Future<User> signUpWithEmail({@required String redirectURL, String email}) {
+  Future<User> signUpWithEmailOTP(
+      {@required String redirectURL, String email}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithEmail(redirectURL: redirectURL, email: email);
   }
 
   // Sign in with email allows existing user to authenticate by email verification.
   // This method will CREATE A NEW USER if one doesn't exist with this email
-  Future<User> signInWithEmail({@required String redirectURL, String email}) {
+  Future<User> signInWithEmailOTP(
+      {@required String redirectURL, String email}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyEmail(redirectURL: redirectURL, email: email);
   }
@@ -100,7 +102,7 @@ class Cotter {
   // Verify user's phone number, then create a user if phone verification is successful
   // This method will allow the user to enter the phone number inside THE IN-APP BROWSER
   // channels will show the options for the user to pick, can be SMS or WHATSAPP
-  Future<User> signUpWithPhone(
+  Future<User> signUpWithPhoneOTP(
       {@required String redirectURL, List<PhoneChannel> channels}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhone(
@@ -110,7 +112,7 @@ class Cotter {
   // Verify user's phone number, then create a user if phone verification is successful
   // This method will allow the user to enter the phone number inside YOUR APP
   // and automatically send verification code via SMS
-  Future<User> signUpWithPhoneViaSMS(
+  Future<User> signUpWithPhoneOTPViaSMS(
       {@required String redirectURL, String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhoneViaSMS(redirectURL: redirectURL, phone: phone);
@@ -119,7 +121,7 @@ class Cotter {
   // Sign in with phone via SMS allows existing users to authenticate by
   // phone verification using SMS.
   // This method will CREATE A NEW USER if one doesn't exist with this phone number
-  Future<User> signInWithPhoneViaSMS(
+  Future<User> signInWithPhoneOTPViaSMS(
       {@required String redirectURL, String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyPhone(
@@ -129,7 +131,7 @@ class Cotter {
   // Verify user's phone number, then create a user if phone verification is successful
   // This method will allow the user to enter the phone number inside YOUR APP
   // and automatically send verification code via WhatsApp
-  Future<User> signUpWithPhoneViaWhatsApp(
+  Future<User> signUpWithPhoneOTPViaWhatsApp(
       {@required String redirectURL, String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhoneViaWhatsApp(
@@ -139,7 +141,7 @@ class Cotter {
   // Sign in with phone via WhatsApp allows existing users to authenticate by
   // phone verification using WhatsApp.
   // This method will CREATE A NEW USER if one doesn't exist with this phone number
-  Future<User> signInWithPhoneViaWhatsApp(
+  Future<User> signInWithPhoneOTPViaWhatsApp(
       {@required String redirectURL, String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyPhone(
