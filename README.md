@@ -102,7 +102,7 @@ Example URL: `myexample://auth_callback`. Add the following to your `ios/Runner/
 
 ### Deep-linking in Android
 
-Example URL: `myexample://auth_callback`. Add the following to your `ios/Runner/Info.plist`.
+Example URL: `myexample://auth_callback`. Add the following to your `android/app/src/main/AndroidManifest.xml`.
 ```xml
 <manifest ...>
     <application ...>
