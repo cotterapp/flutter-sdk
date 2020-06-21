@@ -149,7 +149,7 @@ try {
   // If you want to follow flow 2 above, you can register the user's device as trusted here
   user = await user.registerDevice();
 } catch(e) {
-  print(e)
+  print(e);
 }
 ```
 
@@ -163,7 +163,7 @@ try {
         email: inputController.text,
       );
 } catch(e) {
-  print(e)
+  print(e);
 }
 ```
 
@@ -208,7 +208,7 @@ try {
               phone: inputController.text,
             );
 } catch (e) {
-  print(e)
+  print(e);
 }
 ```
 
@@ -220,7 +220,7 @@ try {
               phone: inputController.text,
             );
 } catch (e) {
-  print(e)
+  print(e);
 }
 ```
 
@@ -235,7 +235,7 @@ try {
               phone: inputController.text,
             );
 } catch (e) {
-  print(e)
+  print(e);
 }
 ```
 
@@ -247,7 +247,7 @@ try {
               phone: inputController.text,
             );
 } catch (e) {
-  print(e)
+  print(e);
 }
 ```
 
