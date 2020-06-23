@@ -14,6 +14,7 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Cotter.url = COTTER_BASE_URL;
+    Cotter.jsBaseURL = COTTER_JS_URL;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(

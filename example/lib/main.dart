@@ -1,5 +1,3 @@
-import 'package:cotter/cotter.dart';
-import 'package:example/apikeys.dart';
 import 'package:example/dashboard.dart';
 import 'package:example/register.dart';
 import 'package:example/registerWithEmailVerification.dart';
@@ -44,7 +42,6 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   static String routeName = '/';
-  Cotter cotter = new Cotter(apiKeyID: API_KEY_ID);
 
   @override
   Widget build(BuildContext context) {

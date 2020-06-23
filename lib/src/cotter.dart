@@ -109,6 +109,17 @@ class Cotter {
         redirectURL: redirectURL, phoneChannels: channels);
   }
 
+  // Sign in with phone allows existing user to authenticate by phone verification.
+  // This method will allow the user to enter the phone number inside THE IN-APP BROWSER
+  // channels will show the options for the user to pick, can be SMS or WHATSAPP
+  // This method will CREATE A NEW USER if one doesn't exist with this email
+  Future<User> signInWithPhoneOTP(
+      {@required String redirectURL, List<PhoneChannel> channels}) {
+    Verify verify = new Verify(apiKeyID: this.apiKeyID);
+    return verify.signUpWithPhone(
+        redirectURL: redirectURL, phoneChannels: channels);
+  }
+
   // Verify user's phone number, then create a user if phone verification is successful
   // This method will allow the user to enter the phone number inside YOUR APP
   // and automatically send verification code via SMS

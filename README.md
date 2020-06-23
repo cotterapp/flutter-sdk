@@ -155,12 +155,13 @@ try {
 
 ### Signing in
 To authenticate by verifying user's email:
+> This method will create a new user if one doesn't exist.
 ```dart
 Cotter cotter = new Cotter(apiKeyID: API_KEY_ID);
 try {
   var user = await cotter.signInWithEmailOTP(
         redirectURL: "myexample://auth_callback",
-        email: inputController.text,
+        email: inputController.text, // Optional, if you leave this blank, user can enter email in the in-app browser
       );
 } catch(e) {
   print(e);
@@ -193,7 +194,10 @@ This method will:
 ```dart
 Cotter cotter = new Cotter(apiKeyID: API_KEY_ID);
 try {
-  var user = await cotter.signUpWithPhoneOTP(redirectURL: "myexample://auth_callback");
+  var user = await cotter.signUpWithPhoneOTP(
+    redirectURL: "myexample://auth_callback",
+    channels: [PhoneChannel.SMS, PhoneChannel.WHATSAPP], // optional, default is SMS
+  );
 } catch (e) {
   print(e);
 }
@@ -227,6 +231,22 @@ try {
 ### Signing In
 
 To authenticate by verifying user's phone number:
+
+**Option 1:** You want to use Cotter's input form inside the in-app browser. This helps with validating the input.
+> This method will create a new user if one doesn't exist.
+```dart
+Cotter cotter = new Cotter(apiKeyID: API_KEY_ID);
+try {
+  var user = await cotter.signInWithPhoneOTP(
+    redirectURL: "myexample://auth_callback",
+    channels: [PhoneChannel.SMS, PhoneChannel.WHATSAPP], // optional, default is SMS
+  );
+} catch (e) {
+  print(e);
+}
+```
+
+**Option 2:** You want to use your own input form and buttons. You can present 2 buttons to allow sending the OTP via WhatsApp or SMS.
 - Using SMS:
 ```dart
 try {
