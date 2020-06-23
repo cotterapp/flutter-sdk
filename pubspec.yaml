@@ -18,6 +18,7 @@ dependencies:
   async: ^2.4.1
   meta: ^1.1.8
   flutter_web_auth: ^0.2.4
+  crypto: ^2.1.4
 
 dev_dependencies:
   flutter_test:
