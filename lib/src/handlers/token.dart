@@ -1,4 +1,5 @@
 import 'package:cotter/src/api.dart';
+import 'package:cotter/src/exceptions/token.dart';
 import 'package:cotter/src/helper/storage.dart';
 import 'package:cotter/src/helper/enum.dart';
 import 'package:cotter/src/tokens/cotterAccessToken.dart';
@@ -62,7 +63,7 @@ class Token {
     if (token == null || token.isExpired()) {
       var refreshToken = await Token.getRefreshToken();
       if (refreshToken == null) {
-        throw 'Refresh token is not in storage, you need to log in.';
+        throw RefreshTokenNotExistException(message: 'Refresh token is not in storage, you need to log in.');
       }
 
       API api = new API(apiKeyID: apiKeyID);
