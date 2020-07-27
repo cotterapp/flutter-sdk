@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cotter/cotter.dart';
+import 'package:cotter/src/exceptions/user.dart';
 import 'package:cotter/src/handlers/device.dart';
 import 'package:cotter/src/handlers/token.dart';
 import 'package:cotter/src/handlers/verify.dart';
@@ -60,7 +61,7 @@ class User {
   static Future<User> getLoggedInUser({Cotter cotter}) async {
     var userStr = await Storage.read(key: LOGGED_IN_USER_KEY);
     if (userStr == null) {
-      return null;
+      throw UserNotLoggedInException;
     }
     var user = User.fromJson(json.decode(userStr));
     user.cotter = cotter;
