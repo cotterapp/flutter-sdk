@@ -1,12 +1,9 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:cotter/cotter.dart';
 import 'package:cotter/src/api.dart';
 import 'package:cotter/src/helper/enum.dart';
 import 'package:cotter/src/helper/random.dart';
+import 'package:cotter/src/helper/web_auth.dart';
 import 'package:cotter/src/tokens/oAuthToken.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:meta/meta.dart';
 
 class Verify {
@@ -58,10 +55,9 @@ class Verify {
           identifierType: EmailType,
           redirectURL: redirectURL);
     }
-    final result = await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: redirectURL,
-    );
+
+    final result = await WebAuth.startWebAuth(url, redirectURL);
+
     return await this._processRedirectURL(result, redirectURL);
   }
 
@@ -71,10 +67,9 @@ class Verify {
   }) async {
     var url = this._constructURLPathWithInput(
         identifier: email, identifierType: EmailType, redirectURL: redirectURL);
-    final result = await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: redirectURL,
-    );
+
+    final result = await WebAuth.startWebAuth(url, redirectURL);
+
     return await this._processRedirectURL(result, redirectURL);
   }
 
@@ -87,10 +82,9 @@ class Verify {
         identifierType: PhoneType,
         redirectURL: redirectURL,
         phoneChannels: phoneChannels);
-    final result = await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: redirectURL,
-    );
+      
+    final result = await WebAuth.startWebAuth(url, redirectURL);
+
     return await this._processRedirectURL(result, redirectURL);
   }
 
@@ -126,10 +120,9 @@ class Verify {
         identifierType: PhoneType,
         redirectURL: redirectURL,
         channel: channel);
-    final result = await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: redirectURL,
-    );
+    
+    final result = await WebAuth.startWebAuth(url, redirectURL);
+
     return await this._processRedirectURL(result, redirectURL);
   }
 
