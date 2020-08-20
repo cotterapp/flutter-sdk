@@ -76,6 +76,7 @@ class InputFormState extends State<InputForm> {
   @override
   void initState() {
     Cotter.url = COTTER_BASE_URL;
+    Cotter.jsBaseURL = COTTER_JS_URL;
     super.initState();
   }
 
@@ -166,6 +167,7 @@ class InputFormState extends State<InputForm> {
   @override
   Widget build(BuildContext context) {
     Cotter.url = COTTER_BASE_URL;
+    Cotter.jsBaseURL = COTTER_JS_URL;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 40),
       child: Column(
