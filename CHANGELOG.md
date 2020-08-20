@@ -12,3 +12,7 @@
 ## 0.1.0
 
 * Implement sign in with email and phone number.
+
+## 0.1.1
+
+* Fix in-app browser on Android for sign in with email and phone number.

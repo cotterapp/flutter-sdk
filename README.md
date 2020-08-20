@@ -7,14 +7,35 @@ A Flutter SDK for Cotter's Authentication Services. This package helps you add p
 - [ ] Sign in with email using magic link
 - [ ] Sign in with phone number magic link
 
+
 ## Getting Started
+
+- [Documentation](https://docs.cotter.app/sdk-reference/flutter)
+- [Developer Account](https://dev.cotter.app)
 
 As mentioned, there are 3 different ways to authenticate users. You can also combine the authentication methods, for example: Register the user after verifying their emails, then use Sign in with device for subsequent logins.
 
 To use this SDK, you can [create a free account at Cotter](https://dev.cotter.app) to get your API keys.
 
+
+### For Android
+Update your `minSdkVersion` to `18` inside `android/app/build.gradle`
+
+```
+defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.example.example"
+        minSdkVersion 18  // Update this line
+        ...
+}
+```
+
+
 # Sign in with device
 Signing in with device works like Google Prompt. It allows users to sign in to your website or app automatically from a device that they trust, or in one-tap by approving the login request from your app.
+
+### Quickstart
+Find a [quickstart tutorial in our documentation](https://docs.cotter.app/quickstart-guides/flutter-sign-in-with-device).
 
 ### Signing Up
 To register a new user, we need to create a new user in Cotter and register the current device as trusted.
@@ -108,7 +129,7 @@ Example URL: `myexample://auth_callback`. Add the following to your `android/app
     <application ...>
 
     <!-- Add the lines from here -->
-    <activity android:name=".CallbackActivity" >
+    <activity android:name="com.linusu.flutter_web_auth.CallbackActivity" >
       <intent-filter android:label="flutter_web_auth">
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
