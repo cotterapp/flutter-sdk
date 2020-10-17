@@ -57,7 +57,7 @@ class UserProfileState extends State<UserProfile> {
   User user;
   bool loading = true;
   String error;
-  String redirectURL = "myexample://auth_callback";
+  String redirectURL = "pay-merchant-app://auth_callback";
 
   void resetError() {
     setState(() {
@@ -124,7 +124,11 @@ class UserProfileState extends State<UserProfile> {
               fontSize: 18,
             ),
           ),
-          Text(loading ? "loading..." : error != null ? error : ""),
+          Text(loading
+              ? "loading..."
+              : error != null
+                  ? error
+                  : ""),
           user != null ? Text("ID: ${user.id}") : Text(""),
           user != null ? Text("Identifier: ${user.identifier}") : Text(""),
           user != null ? Text("Issuer: ${user.issuer}") : Text(""),
@@ -263,7 +267,9 @@ class OAuthTokensState extends State<OAuthTokens> {
                     textAlign: TextAlign.left,
                   ),
                   Text(token != null
-                      ? tokenName != "Refresh Token" ? token.token : token
+                      ? tokenName != "Refresh Token"
+                          ? token.token
+                          : token
                       : ''),
                   Text(
                     "Decoded:",

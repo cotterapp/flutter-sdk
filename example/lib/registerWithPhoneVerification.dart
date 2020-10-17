@@ -85,12 +85,12 @@ class InputFormState extends State<InputForm> {
       User user;
       if (channel == "SMS") {
         user = await cotter.signUpWithPhoneOTPViaSMS(
-          redirectURL: "myexample://auth_callback",
+          redirectURL: "pay-merchant-app://auth_callback",
           phone: inputController.text,
         );
       } else {
         user = await cotter.signUpWithPhoneOTPViaWhatsApp(
-          redirectURL: "myexample://auth_callback",
+          redirectURL: "pay-merchant-app://auth_callback",
           phone: inputController.text,
         );
       }
@@ -114,12 +114,12 @@ class InputFormState extends State<InputForm> {
     try {
       if (channel == "SMS") {
         await cotter.signInWithPhoneOTPViaSMS(
-          redirectURL: "myexample://auth_callback",
+          redirectURL: "pay-merchant-app://auth_callback",
           phone: inputController.text,
         );
       } else {
         await cotter.signInWithPhoneOTPViaWhatsApp(
-          redirectURL: "myexample://auth_callback",
+          redirectURL: "pay-merchant-app://auth_callback",
           phone: inputController.text,
         );
       }

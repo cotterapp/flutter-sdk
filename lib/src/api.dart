@@ -208,7 +208,7 @@ class API {
   }
 
   Future<OAuthToken> getTokensFromRefreshToken(String refreshToken) async {
-    var path = '/token';
+    var path = "/token/${this.apiKeyID}";
     Map<String, dynamic> req = {
       'grant_type': 'refresh_token',
       'refresh_token': refreshToken,
