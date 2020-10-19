@@ -57,7 +57,7 @@ class UserProfileState extends State<UserProfile> {
   User user;
   bool loading = true;
   String error;
-  String redirectURL = "pay-merchant-app://auth_callback";
+  String redirectURL = "myexample://auth_callback";
 
   void resetError() {
     setState(() {

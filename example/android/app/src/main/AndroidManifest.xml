@@ -44,9 +44,9 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <!-- This is for pay-merchant-app://auth_callback -->
+            <!-- This is for myexample://auth_callback -->
             <!-- 👇 Change this to your own URL scheme -->
-            <data android:scheme="pay-merchant-app" android:host="auth_callback"/>
+            <data android:scheme="myexample" android:host="auth_callback"/>
           </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

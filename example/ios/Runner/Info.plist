@@ -8,10 +8,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>pay-merchant-app</string> <!-- 👈 Change this to your own URL Scheme -->
+			<string>myexample</string> <!-- 👈 Change this to your own URL Scheme -->
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>pay-merchant-app</string> <!-- 👈 Change this to your own URL Scheme -->
+				<string>myexample</string> <!-- 👈 Change this to your own URL Scheme -->
 			</array>
 		</dict>
 	</array>
