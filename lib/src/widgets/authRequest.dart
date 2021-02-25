@@ -1,5 +1,4 @@
 import 'package:cotter/cotter.dart';
-import 'package:cotter/src/models/approveRequestStrings.dart';
 import 'package:cotter/src/models/authRequestStrings.dart';
 import 'package:flutter/material.dart';
 

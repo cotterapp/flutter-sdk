@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class ApproveRequest extends StatefulWidget {
   final Cotter cotter;
-  ApproveRequestStrings strings;
   ApproveRequest({
     @required this.cotter,
   });

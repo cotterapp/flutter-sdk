@@ -63,7 +63,8 @@ class Token {
     if (token == null || token.isExpired()) {
       var refreshToken = await Token.getRefreshToken();
       if (refreshToken == null) {
-        throw RefreshTokenNotExistException(message: 'Refresh token is not in storage, you need to log in.');
+        throw RefreshTokenNotExistException(
+            message: 'Refresh token is not in storage, you need to log in.');
       }
 
       API api = new API(apiKeyID: apiKeyID);

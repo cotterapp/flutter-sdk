@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cotter/src/helper/jwt.dart';
 import 'package:cotter/src/tokens/standardClaims.dart';
 import 'package:jose/jose.dart';

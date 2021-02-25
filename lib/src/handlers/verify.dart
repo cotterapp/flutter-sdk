@@ -82,7 +82,7 @@ class Verify {
         identifierType: PhoneType,
         redirectURL: redirectURL,
         phoneChannels: phoneChannels);
-      
+
     final result = await WebAuth.startWebAuth(url, redirectURL);
 
     return await this._processRedirectURL(result, redirectURL);
@@ -120,7 +120,7 @@ class Verify {
         identifierType: PhoneType,
         redirectURL: redirectURL,
         channel: channel);
-    
+
     final result = await WebAuth.startWebAuth(url, redirectURL);
 
     return await this._processRedirectURL(result, redirectURL);
@@ -195,7 +195,7 @@ class Verify {
     url = url + "&input=${Uri.encodeComponent(identifier)}";
 
     String channelStr = channel.toString().split('.').last;
-    ;
+
     if (channelStr != null && channelStr.length > 0) {
       url = url + "&use_channel=$channelStr";
     }
