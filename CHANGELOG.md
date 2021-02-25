@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2021-02-25
+
+### Changed
+
+- Update dependencies
+
 ## [0.1.2] - 2020-10-19
 
 ### Changed
@@ -41,3 +47,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [unreleased]: https://github.com/cotterapp/flutter-sdk/compare/v0.1.2...HEAD
 [0.1.2]: https://github.com/cotterapp/flutter-sdk/compare/v0.1.1...v0.1.2
+[0.1.3]: https://github.com/cotterapp/flutter-sdk/compare/v0.1.2...v0.1.3
