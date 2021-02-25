@@ -1,4 +1,3 @@
-
 import 'package:cotter/src/helper/url_parser.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 
 class JWT {
+  /// Get web key to validate tokens.
   static Future<Map<String, dynamic>> getJsonWebKey() async {
     var path = '/token/jwks';
     final http.Response response = await http.get("${Cotter.baseURL}$path");
@@ -26,6 +27,7 @@ class JWT {
     }
   }
 
+  /// Verify if the token that is passed in is valid.
   static Future<bool> verify(String token) async {
     // decode the jwt, note: this constructor can only be used for JWT inside JWS
     // structures

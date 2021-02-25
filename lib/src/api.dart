@@ -25,6 +25,8 @@ class API {
     return headers;
   }
 
+  /// Register a new user with specified identifier to Cotter.
+  /// Duplicate identifier will result in an error.
   Future<User> registerUserToCotter(String identifier) async {
     String url = '${Cotter.baseURL}/user/create';
     Map<String, dynamic> req = {
@@ -126,7 +128,7 @@ class API {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      _handleError(response);
+      return _handleError(response);
     }
   }
 
