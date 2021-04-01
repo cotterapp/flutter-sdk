@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:cotter/src/cotter.dart';
 import 'package:http/http.dart' as http;
 import 'package:jose/jose.dart';
 
 class JWT {
   /// Get web key to validate tokens.
-  static Future<Map<String, dynamic>> getJsonWebKey() async {
+  static Future<Map<String, dynamic>?> getJsonWebKey() async {
     var path = '/token/jwks';
     final uri = Uri.parse("${Cotter.baseURL}$path");
     final http.Response response = await http.get(uri);
@@ -14,7 +14,7 @@ class JWT {
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);
       List<Map<String, dynamic>> keys = resp["keys"];
-      Map<String, dynamic> jwtKey;
+      Map<String, dynamic>? jwtKey;
       keys.forEach((k) {
         if (k["kid"] == Cotter.kid) {
           jwtKey = k;
@@ -34,7 +34,7 @@ class JWT {
     // structures
     var jwt = new JsonWebToken.unverified(token);
 
-    var jwk = await getJsonWebKey();
+    var jwk = await (getJsonWebKey() as FutureOr<Map<String, dynamic>>);
     // create key store to verify the signature
     var keyStore = new JsonWebKeyStore()..addKey(new JsonWebKey.fromJson(jwk));
 

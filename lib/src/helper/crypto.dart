@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:meta/meta.dart';
 import 'package:cryptography/cryptography.dart';
 
 class CotterKeyPair {
-  SimpleKeyPair keyPair;
+  late SimpleKeyPair keyPair;
   static final type = KeyPairType.ed25519;
 
   CotterKeyPair(SimpleKeyPair keyPair) {
@@ -22,7 +21,7 @@ class CotterKeyPair {
   }
 
   static CotterKeyPair loadKeysFromString(
-      {@required String publicKey, @required String privateKey}) {
+      {required String publicKey, required String privateKey}) {
     List<int> publicKeyBytes = base64Decode(publicKey);
     List<int> privateKeyBytes = base64Decode(privateKey);
 
@@ -51,7 +50,7 @@ class Crypto {
   }
 
   static Future<String> sign(
-      {@required String message, @required CotterKeyPair cotterKeyPair}) async {
+      {required String message, required CotterKeyPair cotterKeyPair}) async {
     KeyPair keyPair = cotterKeyPair.keyPair;
     List<int> messageBytes = utf8.encode(message);
     Signature signature = await Ed25519().sign(

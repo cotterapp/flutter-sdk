@@ -3,9 +3,9 @@ import 'package:cotter/src/models/approveRequestStrings.dart';
 import 'package:flutter/material.dart';
 
 class ApproveRequest extends StatefulWidget {
-  final Cotter cotter;
+  final Cotter? cotter;
   ApproveRequest({
-    @required this.cotter,
+    required this.cotter,
   });
   @override
   ApproveRequestState createState() => ApproveRequestState();
@@ -14,7 +14,7 @@ class ApproveRequest extends StatefulWidget {
 class ApproveRequestState extends State<ApproveRequest> {
   @override
   Widget build(BuildContext context) {
-    ApproveRequestStrings strings = widget.cotter.approveRequestStrings;
+    ApproveRequestStrings strings = widget.cotter!.approveRequestStrings;
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -22,7 +22,7 @@ class ApproveRequestState extends State<ApproveRequest> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.close),
-          color: widget.cotter.colors.text,
+          color: widget.cotter!.colors.text,
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -72,7 +72,7 @@ class ApproveRequestState extends State<ApproveRequest> {
                         strings.subtitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: widget.cotter.colors.grey,
+                          color: widget.cotter!.colors.grey,
                           fontSize: 15,
                         ),
                       ),
@@ -95,8 +95,8 @@ class ApproveRequestState extends State<ApproveRequest> {
                           Navigator.pop(context, true);
                         },
                         child: Text(strings.approve),
-                        color: widget.cotter.colors.success,
-                        textColor: widget.cotter.colors.success,
+                        color: widget.cotter!.colors.success,
+                        textColor: widget.cotter!.colors.success,
                       ),
                     ),
                   ),
@@ -108,8 +108,8 @@ class ApproveRequestState extends State<ApproveRequest> {
                           Navigator.pop(context, false);
                         },
                         child: Text(strings.reject),
-                        color: widget.cotter.colors.error,
-                        textColor: widget.cotter.colors.error,
+                        color: widget.cotter!.colors.error,
+                        textColor: widget.cotter!.colors.error,
                       ),
                     ),
                   ),

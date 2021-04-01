@@ -8,30 +8,30 @@ import 'package:cotter/src/tokens/cotterJwtToken.dart';
 import 'package:cotter/src/tokens/oAuthToken.dart';
 
 class Token {
-  static OAuthToken oAuthToken;
-  static CotterAccessToken accessToken;
-  static CotterIDToken idToken;
+  static OAuthToken? oAuthToken;
+  static CotterAccessToken? accessToken;
+  static CotterIDToken? idToken;
 
   static Future<void> store(OAuthToken oAuthToken) async {
     Token.oAuthToken = oAuthToken;
-    if (oAuthToken.accessToken != null && oAuthToken.accessToken.length > 0) {
+    if (oAuthToken.accessToken != null && oAuthToken.accessToken!.length > 0) {
       await Storage.write(key: ACCESS_TOKEN_KEY, value: oAuthToken.accessToken);
-      Token.accessToken = new CotterAccessToken(token: oAuthToken.accessToken);
+      Token.accessToken = new CotterAccessToken(token: oAuthToken.accessToken!);
     }
-    if (oAuthToken.refreshToken != null && oAuthToken.refreshToken.length > 0) {
+    if (oAuthToken.refreshToken != null && oAuthToken.refreshToken!.length > 0) {
       await Storage.write(
           key: REFRESH_TOKEN_KEY, value: oAuthToken.refreshToken);
     }
-    if (oAuthToken.idToken != null && oAuthToken.idToken.length > 0) {
+    if (oAuthToken.idToken != null && oAuthToken.idToken!.length > 0) {
       await Storage.write(key: ID_TOKEN_KEY, value: oAuthToken.idToken);
-      Token.idToken = new CotterIDToken(token: oAuthToken.idToken);
+      Token.idToken = new CotterIDToken(token: oAuthToken.idToken!);
     }
-    if (oAuthToken.tokenType != null && oAuthToken.tokenType.length > 0) {
+    if (oAuthToken.tokenType != null && oAuthToken.tokenType!.length > 0) {
       await Storage.write(key: TOKEN_TYPE_KEY, value: oAuthToken.tokenType);
     }
   }
 
-  static Future<CotterAccessToken> getAccessToken(String apiKeyID) async {
+  static Future<CotterAccessToken?> getAccessToken(String apiKeyID) async {
     if (Token.accessToken == null) {
       var token = await Storage.read(key: ACCESS_TOKEN_KEY);
       if (token != null) {
@@ -42,7 +42,7 @@ class Token {
     return Token.accessToken;
   }
 
-  static Future<CotterIDToken> getIDToken(String apiKeyID) async {
+  static Future<CotterIDToken?> getIDToken(String? apiKeyID) async {
     if (Token.idToken == null) {
       var token = await Storage.read(key: ID_TOKEN_KEY);
       if (token != null) {
@@ -53,13 +53,13 @@ class Token {
     return Token.idToken;
   }
 
-  static Future<String> getRefreshToken() async {
+  static Future<String?> getRefreshToken() async {
     var refreshToken = await Storage.read(key: REFRESH_TOKEN_KEY);
     return refreshToken;
   }
 
   static Future<void> refreshIfNeeded(
-      CotterJwtToken token, String apiKeyID) async {
+      CotterJwtToken? token, String? apiKeyID) async {
     if (token == null || token.isExpired()) {
       var refreshToken = await Token.getRefreshToken();
       if (refreshToken == null) {

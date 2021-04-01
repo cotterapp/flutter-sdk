@@ -19,17 +19,17 @@ class Cotter {
   static String jsBaseURL = CotterJSBaseURL;
   static String kid = JwtKID;
 
-  CotterColors colors;
+  late CotterColors colors;
   AuthRequestStrings authRequestStrings = AuthRequestStrings();
   ApproveRequestStrings approveRequestStrings = ApproveRequestStrings();
 
   /// Initialize Cotter with specified API Key ID.
-  Cotter({@required this.apiKeyID}) {
+  Cotter({required this.apiKeyID}) {
     colors = CotterColors();
   }
 
   /// Sets Color theme
-  Cotter withTheme({@required Color primaryColor, bool darkTheme = false}) {
+  Cotter withTheme({required Color primaryColor, bool darkTheme = false}) {
     colors = CotterColors(primary: primaryColor, darkTheme: darkTheme);
     return this;
   }
@@ -71,15 +71,15 @@ class Cotter {
   // ===== Authentication Methods: Device Based =====
 
   /// Sign up with this device, identifier can be user's email, phone, or any string to identify your user
-  Future<User> signUpWithDevice({@required String identifier}) {
+  Future<User> signUpWithDevice({required String identifier}) {
     Device device = new Device(apiKeyID: this.apiKeyID);
     return device.signUpWithDevice(identifier: identifier);
   }
 
   /// Sign up with this device, identifier can be user's email, phone, or any string to identify your user
   Future<Event> signInWithDevice({
-    @required String identifier,
-    @required BuildContext context,
+    required String identifier,
+    required BuildContext context,
   }) {
     Device device = new Device(apiKeyID: this.apiKeyID);
     return device.signInWithDevice(
@@ -93,7 +93,7 @@ class Cotter {
 
   /// Verify user's email, then create a user if email verification is successful
   Future<User> signUpWithEmailOTP(
-      {@required String redirectURL, String email}) {
+      {required String redirectURL, String? email}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithEmail(redirectURL: redirectURL, email: email);
   }
@@ -101,7 +101,7 @@ class Cotter {
   /// Sign in with email allows existing user to authenticate by email verification.
   /// This method will CREATE A NEW USER if one doesn't exist with this email
   Future<User> signInWithEmailOTP(
-      {@required String redirectURL, String email}) {
+      {required String redirectURL, required String email}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyEmail(redirectURL: redirectURL, email: email);
   }
@@ -110,7 +110,7 @@ class Cotter {
   /// This method will allow the user to enter the phone number inside THE IN-APP BROWSER
   /// channels will show the options for the user to pick, can be SMS or WHATSAPP
   Future<User> signUpWithPhoneOTP(
-      {@required String redirectURL, List<PhoneChannel> channels}) {
+      {required String redirectURL, List<PhoneChannel>? channels}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhone(
         redirectURL: redirectURL, phoneChannels: channels);
@@ -121,7 +121,7 @@ class Cotter {
   /// channels will show the options for the user to pick, can be SMS or WHATSAPP
   /// This method will CREATE A NEW USER if one doesn't exist with this email
   Future<User> signInWithPhoneOTP(
-      {@required String redirectURL, List<PhoneChannel> channels}) {
+      {required String redirectURL, List<PhoneChannel>? channels}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhone(
         redirectURL: redirectURL, phoneChannels: channels);
@@ -131,7 +131,7 @@ class Cotter {
   /// This method will allow the user to enter the phone number inside YOUR APP
   /// and automatically send verification code via SMS
   Future<User> signUpWithPhoneOTPViaSMS(
-      {@required String redirectURL, String phone}) {
+      {required String redirectURL, required String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhoneViaSMS(redirectURL: redirectURL, phone: phone);
   }
@@ -140,7 +140,7 @@ class Cotter {
   /// phone verification using SMS.
   /// This method will CREATE A NEW USER if one doesn't exist with this phone number
   Future<User> signInWithPhoneOTPViaSMS(
-      {@required String redirectURL, String phone}) {
+      {required String redirectURL, required String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyPhone(
         redirectURL: redirectURL, phone: phone, channel: PhoneChannel.SMS);
@@ -150,7 +150,7 @@ class Cotter {
   /// This method will allow the user to enter the phone number inside YOUR APP
   /// and automatically send verification code via WhatsApp
   Future<User> signUpWithPhoneOTPViaWhatsApp(
-      {@required String redirectURL, String phone}) {
+      {required String redirectURL, required String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.signUpWithPhoneViaWhatsApp(
         redirectURL: redirectURL, phone: phone);
@@ -160,7 +160,7 @@ class Cotter {
   /// phone verification using WhatsApp.
   /// This method will CREATE A NEW USER if one doesn't exist with this phone number
   Future<User> signInWithPhoneOTPViaWhatsApp(
-      {@required String redirectURL, String phone}) {
+      {required String redirectURL, required String phone}) {
     Verify verify = new Verify(apiKeyID: this.apiKeyID);
     return verify.verifyPhone(
         redirectURL: redirectURL, phone: phone, channel: PhoneChannel.WHATSAPP);
@@ -169,17 +169,17 @@ class Cotter {
   // ===== OAuth Token Handlers =====
 
   /// Get access token that is currently stored in the storage
-  Future<CotterAccessToken> getAccessToken() {
+  Future<CotterAccessToken?> getAccessToken() {
     return Token.getAccessToken(this.apiKeyID);
   }
 
   /// Get ID token that is currently stored in the storage
-  Future<CotterIDToken> getIDToken() {
+  Future<CotterIDToken?> getIDToken() {
     return Token.getIDToken(this.apiKeyID);
   }
 
   /// Get refresh token that is currently stored in the storage
-  Future<String> getRefreshToken() {
+  Future<String?> getRefreshToken() {
     return Token.getRefreshToken();
   }
 

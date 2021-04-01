@@ -1,12 +1,12 @@
 import 'package:cotter/src/handlers/token.dart';
 
 class OAuthToken {
-  String accessToken;
-  String idToken;
-  String refreshToken;
-  int expiresIn;
-  String tokenType;
-  String authMethod;
+  String? accessToken;
+  String? idToken;
+  String? refreshToken;
+  int? expiresIn;
+  String? tokenType;
+  String? authMethod;
 
   OAuthToken({
     this.accessToken,

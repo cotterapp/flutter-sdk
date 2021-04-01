@@ -1,18 +1,18 @@
+import 'dart:async';
 import 'package:cotter/cotter.dart';
 import 'package:cotter/src/api.dart';
 import 'package:cotter/src/helper/enum.dart';
 import 'package:cotter/src/helper/random.dart';
 import 'package:cotter/src/helper/web_auth.dart';
 import 'package:cotter/src/tokens/oAuthToken.dart';
-import 'package:meta/meta.dart';
 
 class Verify {
-  String apiKeyID;
-  String state;
-  String codeVerifier;
-  String codeChallenge;
+  String? apiKeyID;
+  String? state;
+  String? codeVerifier;
+  String? codeChallenge;
 
-  Verify({@required String apiKeyID}) {
+  Verify({required String? apiKeyID}) {
     this.apiKeyID = apiKeyID;
     this.state = _generateState();
     var codeVerifier = RandomString.createCodeVerifier();
@@ -27,7 +27,7 @@ class Verify {
       User user = await api.getUserByIdentifier(identifier);
       if (user != null &&
           user.id != null &&
-          user.id.length > 0 &&
+          user.id!.length > 0 &&
           user.id != "00000000-0000-0000-0000-000000000000") {
         return true;
       }
@@ -41,8 +41,8 @@ class Verify {
 
   // ======= Email Verification ========
   Future<User> signUpWithEmail({
-    @required String redirectURL,
-    String email,
+    required String redirectURL,
+    String? email,
   }) async {
     var url = this
         ._constructURLPath(identifierType: EmailType, redirectURL: redirectURL);
@@ -62,8 +62,8 @@ class Verify {
   }
 
   Future<User> verifyEmail({
-    @required String redirectURL,
-    @required String email,
+    required String redirectURL,
+    required String email,
   }) async {
     var url = this._constructURLPathWithInput(
         identifier: email, identifierType: EmailType, redirectURL: redirectURL);
@@ -75,8 +75,8 @@ class Verify {
 
   // ======= Phone Verification ========
   Future<User> signUpWithPhone({
-    @required String redirectURL,
-    List<PhoneChannel> phoneChannels = DefaultPhoneChannels,
+    required String redirectURL,
+    List<PhoneChannel>? phoneChannels = DefaultPhoneChannels,
   }) async {
     var url = this._constructURLPath(
         identifierType: PhoneType,
@@ -89,8 +89,8 @@ class Verify {
   }
 
   Future<User> signUpWithPhoneViaSMS({
-    @required String redirectURL,
-    @required String phone,
+    required String redirectURL,
+    required String phone,
   }) async {
     if (await this._checkIfUserExist(phone)) {
       throw "User already exists";
@@ -100,8 +100,8 @@ class Verify {
   }
 
   Future<User> signUpWithPhoneViaWhatsApp({
-    @required String redirectURL,
-    @required String phone,
+    required String redirectURL,
+    required String phone,
   }) async {
     if (await this._checkIfUserExist(phone)) {
       throw "User already exists";
@@ -111,9 +111,9 @@ class Verify {
   }
 
   Future<User> verifyPhone({
-    @required String redirectURL,
-    @required String phone,
-    @required PhoneChannel channel,
+    required String redirectURL,
+    required String phone,
+    required PhoneChannel channel,
   }) async {
     var url = this._constructURLPathWithInput(
         identifier: phone,
@@ -139,13 +139,14 @@ class Verify {
       throw "State from the in-app browser is not the same as the original state.";
     }
 
-    var challengeID = uri.queryParameters["challenge_id"];
+    var challengeID = uri.queryParameters["challenge_id"]!;
     var code = uri.queryParameters["code"];
 
     // Call Get Identity with authorization code
     API api = new API(apiKeyID: this.apiKeyID);
-    var resp = await api.getIdentity(
-        code, state, challengeID, this.codeVerifier, redirectURL);
+    var resp = await (api.getIdentity(
+            code, state, challengeID, this.codeVerifier, redirectURL)
+        as FutureOr<Map<String, dynamic>>);
 
     User user = User.fromJson(resp["user"]);
     await user.store();
@@ -159,10 +160,10 @@ class Verify {
   }
 
   String _constructURLPath({
-    @required String identifierType,
-    @required String redirectURL,
-    List<PhoneChannel> phoneChannels,
-    String cotterUserID,
+    required String identifierType,
+    required String redirectURL,
+    List<PhoneChannel>? phoneChannels,
+    String? cotterUserID,
   }) {
     var url = "${Cotter.jsBaseURL}?api_key=${this.apiKeyID}";
     url = url + "&redirect_url=$redirectURL";
@@ -181,11 +182,11 @@ class Verify {
   }
 
   String _constructURLPathWithInput({
-    @required String identifier,
-    @required String identifierType,
-    @required String redirectURL,
-    String cotterUserID,
-    PhoneChannel channel,
+    required String identifier,
+    required String identifierType,
+    required String redirectURL,
+    String? cotterUserID,
+    PhoneChannel? channel,
   }) {
     var url = _constructURLPath(
         identifierType: identifierType,

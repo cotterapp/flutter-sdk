@@ -1,15 +1,15 @@
 import 'package:cotter/src/tokens/cotterJwtToken.dart';
 
 class CotterAccessToken extends CotterJwtToken {
-  String token;
-  String clientUserID;
-  String authenticationMethod;
-  String scope;
-  String type;
+  String? token;
+  String? clientUserID;
+  String? authenticationMethod;
+  String? scope;
+  String? type;
 
-  CotterAccessToken({this.token}) : super(token) {
+  CotterAccessToken({required String this.token}) : super(token) {
     this.token = token;
-    var payload = CotterJwtToken.decodePayload(token);
+    var payload = CotterJwtToken.decodePayload(token!)!;
     this.payload = payload;
     this.clientUserID = payload["client_user_id"];
     this.authenticationMethod = payload["authentication_method"];
@@ -17,15 +17,15 @@ class CotterAccessToken extends CotterJwtToken {
     this.type = payload["type"];
   }
 
-  String getAuthMethod() {
+  String? getAuthMethod() {
     return this.authenticationMethod;
   }
 
-  String getScope() {
+  String? getScope() {
     return this.scope;
   }
 
-  String getClientUserID() {
+  String? getClientUserID() {
     return this.clientUserID;
   }
 }

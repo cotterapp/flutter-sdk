@@ -1,5 +1,5 @@
 class Canceler {
-  bool canceled;
+  bool? canceled;
   Canceler({this.canceled});
   void cancel() {
     this.canceled = true;

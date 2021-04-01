@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,12 +14,12 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class API {
-  String apiKeyID;
+  String? apiKeyID;
 
-  API({@required this.apiKeyID});
+  API({required this.apiKeyID});
 
-  Map<String, String> headers() {
-    Map<String, String> headers = {
+  Map<String, String?> headers() {
+    Map<String, String?> headers = {
       'API_KEY_ID': this.apiKeyID,
       'Content-Type': 'application/json',
     };
@@ -33,38 +34,39 @@ class API {
       "identifier": identifier,
     };
 
-    final http.Response response =
-        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
+    final http.Response response = await http.post(uri,
+        headers: this.headers() as Map<String, String>?, body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       User resp = User.fromJson(json.decode(response.body));
       return resp;
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<User>;
     }
   }
 
   Future<User> getUserByIdentifier(String identifier) async {
     final uri = Uri.parse(
         '${Cotter.baseURL}/user?identifier=${Uri.encodeComponent(identifier)}');
-    final http.Response response = await http.get(uri, headers: this.headers());
+    final http.Response response =
+        await http.get(uri, headers: this.headers() as Map<String, String>?);
 
     if (response.statusCode == 200) {
       User resp = User.fromJson(json.decode(response.body));
       return resp;
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<User>;
     }
   }
 
-  Future<Map<String, dynamic>> updateMethodsWithClientUserID({
-    @required String clientUserID,
-    @required String method,
-    @required bool enrolled,
-    @required String code, // Code for PIN or Public Key
-    String algorithm,
+  Future<Map<String, dynamic>?> updateMethodsWithClientUserID({
+    required String clientUserID,
+    required String method,
+    required bool enrolled,
+    required String code, // Code for PIN or Public Key
+    String? algorithm,
     bool changeCode = false,
-    String currentCode,
+    String? currentCode,
   }) async {
     String url = "${Cotter.baseURL}/user/$clientUserID?oauth_token=true";
     return await updateMethods(
@@ -77,14 +79,14 @@ class API {
         currentCode: currentCode);
   }
 
-  Future<Map<String, dynamic>> updateMethodsWithCotterUserID({
-    @required String cotterUserID,
-    @required String method,
-    @required bool enrolled,
-    @required String code, // Code for PIN or Public Key
-    String algorithm,
+  Future<Map<String, dynamic>?> updateMethodsWithCotterUserID({
+    required String? cotterUserID,
+    required String method,
+    required bool enrolled,
+    required String code, // Code for PIN or Public Key
+    String? algorithm,
     bool changeCode = false,
-    String currentCode,
+    String? currentCode,
   }) async {
     String url =
         "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID&oauth_token=true";
@@ -98,14 +100,14 @@ class API {
         currentCode: currentCode);
   }
 
-  Future<Map<String, dynamic>> updateMethods({
-    @required String url,
-    @required String method,
-    @required bool enrolled,
-    @required String code, // Code for PIN or Public Key
-    String algorithm,
+  Future<Map<String, dynamic>?> updateMethods({
+    required String url,
+    required String method,
+    required bool enrolled,
+    required String code, // Code for PIN or Public Key
+    String? algorithm,
     bool changeCode = false,
-    String currentCode,
+    String? currentCode,
   }) async {
     Map<String, dynamic> req = {
       "method": method,
@@ -123,20 +125,20 @@ class API {
     };
 
     final uri = Uri.parse(url);
-    final http.Response response =
-        await http.put(uri, headers: this.headers(), body: jsonEncode(req));
+    final http.Response response = await http.put(uri,
+        headers: this.headers() as Map<String, String>?, body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<Map<String, dynamic>?>;
     }
   }
 
-  Future<bool> checkEnrolledMethodWithCotterUserID({
-    @required String cotterUserID,
-    @required String method,
-    String pubKey,
+  Future<bool?> checkEnrolledMethodWithCotterUserID({
+    required String? cotterUserID,
+    required String method,
+    String? pubKey,
   }) async {
     String url =
         "${Cotter.baseURL}/user/methods?cotter_user_id=$cotterUserID&method=$method";
@@ -149,10 +151,10 @@ class API {
     return await checkEnrolledMethod(url: url, method: method);
   }
 
-  Future<bool> checkEnrolledMethodWithClientUserID({
-    @required String clientUserID,
-    @required String method,
-    String pubKey,
+  Future<bool?> checkEnrolledMethodWithClientUserID({
+    required String clientUserID,
+    required String method,
+    String? pubKey,
   }) async {
     String url = "${Cotter.baseURL}/user/enrolled/$clientUserID/$method";
     if (pubKey != null) {
@@ -164,10 +166,11 @@ class API {
     return await checkEnrolledMethod(url: url, method: method);
   }
 
-  Future<bool> checkEnrolledMethod(
-      {@required String url, @required String method}) async {
+  Future<bool?> checkEnrolledMethod(
+      {required String url, required String method}) async {
     final uri = Uri.parse(url);
-    final http.Response response = await http.get(uri, headers: this.headers());
+    final http.Response response =
+        await http.get(uri, headers: this.headers() as Map<String, String>?);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);
@@ -176,17 +179,17 @@ class API {
       }
       return false;
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<bool?>;
     }
   }
 
-  Future<Map<String, dynamic>> createApprovedEventRequest(
+  Future<Map<String, dynamic>?> createApprovedEventRequest(
       Map<String, dynamic> req) async {
     var path = '/event/create?oauth_token=true';
     return await createEventRequest(path, req);
   }
 
-  Future<Map<String, dynamic>> createPendingEventRequest(
+  Future<Map<String, dynamic>?> createPendingEventRequest(
       Map<String, dynamic> req) async {
     var path = '/event/create_pending';
     return await createEventRequest(path, req);
@@ -195,20 +198,21 @@ class API {
   Future<Event> createRespondEventRequest(
       String eventID, Map<String, dynamic> req) async {
     var path = '/event/respond/$eventID';
-    var resp = await createEventRequest(path, req);
+    var resp =
+        await (createEventRequest(path, req) as FutureOr<Map<String, dynamic>>);
     return Event.fromJson(resp);
   }
 
-  Future<Map<String, dynamic>> createEventRequest(
+  Future<Map<String, dynamic>?> createEventRequest(
       String path, Map<String, dynamic> req) async {
     final uri = Uri.parse("${Cotter.baseURL}$path");
-    final http.Response response =
-        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
+    final http.Response response = await http.post(uri,
+        headers: this.headers() as Map<String, String>?, body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<Map<String, dynamic>?>;
     }
   }
 
@@ -220,33 +224,34 @@ class API {
     };
 
     final uri = Uri.parse("${Cotter.baseURL}$path");
-    final http.Response response =
-        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
+    final http.Response response = await http.post(uri,
+        headers: this.headers() as Map<String, String>?, body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       var resp = json.decode(response.body);
       OAuthToken oAuthToken = OAuthToken.fromJson(resp);
       return oAuthToken;
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<OAuthToken>;
     }
   }
 
-  Future<Map<String, dynamic>> getEvent(String eventID) async {
+  Future<Map<String, dynamic>?> getEvent(String eventID) async {
     var path = '/event/get/$eventID?oauth_token=true';
     final uri = Uri.parse("${Cotter.baseURL}$path");
-    final http.Response response = await http.get(uri, headers: this.headers());
+    final http.Response response =
+        await http.get(uri, headers: this.headers() as Map<String, String>?);
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<Map<String, dynamic>?>;
     }
   }
 
-  Future<Event> checkNewEvent({
-    String cotterUserID,
-    String clientUserID,
+  Future<Event?> checkNewEvent({
+    String? cotterUserID,
+    String? clientUserID,
   }) async {
     var path = '/event/new';
     if (cotterUserID != null) {
@@ -258,7 +263,8 @@ class API {
     }
 
     final uri = Uri.parse("${Cotter.baseURL}$path");
-    final http.Response response = await http.get(uri, headers: this.headers());
+    final http.Response response =
+        await http.get(uri, headers: this.headers() as Map<String, String>?);
 
     if (response.statusCode == 200) {
       var resp = json.decode(response.body);
@@ -268,15 +274,15 @@ class API {
       Event event = Event.fromJson(resp);
       return event;
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<Event?>;
     }
   }
 
-  Future<Map<String, dynamic>> getIdentity(
-    String authCode,
-    String state,
+  Future<Map<String, dynamic>?> getIdentity(
+    String? authCode,
+    String? state,
     String challengeID,
-    String codeVerifier,
+    String? codeVerifier,
     String redirectURL,
   ) async {
     var path = '/verify/get_identity?oauth_token=true';
@@ -289,13 +295,13 @@ class API {
     };
 
     final uri = Uri.parse("${Cotter.baseURL}$path");
-    final http.Response response =
-        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
+    final http.Response response = await http.post(uri,
+        headers: this.headers() as Map<String, String>?, body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<Map<String, dynamic>?>;
     }
   }
   // ========== HELPER METHODS ==========
@@ -329,21 +335,21 @@ class API {
   }
 
   Future<IPLocation> getIPAddress() async {
-    final uri = Uri.parse('http://geoip-db.com/json/');
+    final uri = Uri.parse('https://geoip-db.com/json/');
     final http.Response response = await http.get(uri);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);
       return IPLocation(ip: resp["IPv4"], location: resp["city"]);
     } else {
-      return _handleError(response);
+      return _handleError(response) as FutureOr<IPLocation>;
     }
   }
 }
 
 class IPLocation {
-  String ip;
-  String location;
+  String? ip;
+  String? location;
 
   IPLocation({
     this.ip = 'unknown',

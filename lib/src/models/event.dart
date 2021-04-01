@@ -1,21 +1,20 @@
 import 'dart:convert';
 
 import 'package:cotter/src/api.dart';
-import 'package:flutter/material.dart';
 
 class Event {
-  int id;
-  String userID;
-  String clientUserID;
-  String issuer;
-  String event;
-  String ip;
-  String location;
-  String timestamp;
-  String method;
-  bool newEvent;
-  bool approved;
-  String signature;
+  int? id;
+  String? userID;
+  String? clientUserID;
+  String? issuer;
+  String? event;
+  String? ip;
+  String? location;
+  String? timestamp;
+  String? method;
+  bool? newEvent;
+  bool? approved;
+  String? signature;
 
   Event({
     this.id,
@@ -67,11 +66,11 @@ class Event {
   String toString() => jsonEncode(this.toJson());
 
   static Event createWithCotterUserID({
-    @required String apiKeyID,
-    @required String cotterUserID,
-    @required String event,
-    @required String timestamp,
-    @required String method,
+    required String? apiKeyID,
+    required String? cotterUserID,
+    required String event,
+    required String timestamp,
+    required String method,
   }) {
     Event e = new Event(
         userID: cotterUserID,
@@ -83,11 +82,11 @@ class Event {
   }
 
   static Event createWithClientUserID({
-    @required String apiKeyID,
-    @required String clientUserID,
-    @required String event,
-    @required String timestamp,
-    @required String method,
+    required String apiKeyID,
+    required String clientUserID,
+    required String event,
+    required String timestamp,
+    required String method,
   }) {
     Event e = new Event(
         clientUserID: clientUserID,
@@ -99,10 +98,10 @@ class Event {
   }
 
   String constructApprovedEventMsg() {
-    String id;
-    if (this.userID != null && this.userID.length > 5) {
+    String? id;
+    if (this.userID != null && this.userID!.length > 5) {
       id = this.userID;
-    } else if (this.clientUserID != null && this.clientUserID.length > 5) {
+    } else if (this.clientUserID != null && this.clientUserID!.length > 5) {
       id = this.clientUserID;
     } else {
       throw "User ID and Client User ID cannot both be empty, please specify one or the other";
@@ -119,10 +118,10 @@ class Event {
   }
 
   String constructRespondEventMsg() {
-    String id;
-    if (this.userID != null && this.userID.length > 5) {
+    String? id;
+    if (this.userID != null && this.userID!.length > 5) {
       id = this.userID;
-    } else if (this.clientUserID != null && this.clientUserID.length > 5) {
+    } else if (this.clientUserID != null && this.clientUserID!.length > 5) {
       id = this.clientUserID;
     } else {
       throw "User ID and Client User ID cannot both be empty, please specify one or the other";
@@ -139,9 +138,9 @@ class Event {
   }
 
   Future<Map<String, dynamic>> constructApprovedEventJSON({
-    @required String codeOrSignature,
-    @required String publicKey,
-    String algorithm,
+    required String codeOrSignature,
+    required String publicKey,
+    String? algorithm,
   }) async {
     API api = new API(apiKeyID: this.issuer);
     IPLocation ipLoc = await api.getIPAddress();
@@ -157,9 +156,9 @@ class Event {
       "public_key": publicKey,
     };
 
-    if (this.userID != null && this.userID.length > 5) {
+    if (this.userID != null && this.userID!.length > 5) {
       req["user_id"] = this.userID;
-    } else if (this.clientUserID != null && this.clientUserID.length > 5) {
+    } else if (this.clientUserID != null && this.clientUserID!.length > 5) {
       req["client_user_id"] = this.clientUserID;
     } else {
       throw "User ID and Client User ID cannot both be empty, please specify one or the other";
@@ -183,9 +182,9 @@ class Event {
       "method": this.method,
     };
 
-    if (this.userID != null && this.userID.length > 5) {
+    if (this.userID != null && this.userID!.length > 5) {
       req["user_id"] = this.userID;
-    } else if (this.clientUserID != null && this.clientUserID.length > 5) {
+    } else if (this.clientUserID != null && this.clientUserID!.length > 5) {
       req["client_user_id"] = this.clientUserID;
     } else {
       throw "User ID and Client User ID cannot both be empty, please specify one or the other";
@@ -195,10 +194,10 @@ class Event {
   }
 
   Future<Map<String, dynamic>> constructRespondEventJSON({
-    @required String method,
-    @required String codeOrSignature,
-    @required String publicKey,
-    String algorithm,
+    required String method,
+    required String codeOrSignature,
+    required String publicKey,
+    String? algorithm,
   }) async {
     Map<String, dynamic> req = {
       "issuer": this.issuer,
@@ -213,9 +212,9 @@ class Event {
       "algorithm": algorithm,
     };
 
-    if (this.userID != null && this.userID.length > 5) {
+    if (this.userID != null && this.userID!.length > 5) {
       req["user_id"] = this.userID;
-    } else if (this.clientUserID != null && this.clientUserID.length > 5) {
+    } else if (this.clientUserID != null && this.clientUserID!.length > 5) {
       req["client_user_id"] = this.clientUserID;
     } else {
       throw "User ID and Client User ID cannot both be empty, please specify one or the other";
