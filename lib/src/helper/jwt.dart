@@ -8,7 +8,8 @@ class JWT {
   /// Get web key to validate tokens.
   static Future<Map<String, dynamic>> getJsonWebKey() async {
     var path = '/token/jwks';
-    final http.Response response = await http.get("${Cotter.baseURL}$path");
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response = await http.get(uri);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);

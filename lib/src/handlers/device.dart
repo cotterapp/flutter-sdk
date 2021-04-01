@@ -43,8 +43,8 @@ class Device {
 
   Future<CotterKeyPair> generateKeys(String userID) async {
     CotterKeyPair cotterKeyPair = await Crypto.generateKeyPair();
-    String pubKey = cotterKeyPair.getPublicKeyBase64();
-    String privKey = cotterKeyPair.getPrivateKeyBase64();
+    String pubKey = await cotterKeyPair.getPublicKeyBase64();
+    String privKey = await cotterKeyPair.getPrivateKeyBase64();
     await this._storeKeys(pubKey, privKey, userID);
     return cotterKeyPair;
   }
@@ -53,7 +53,7 @@ class Device {
     String pubKey = await Storage.read(key: _getKeyStoreAliasPublicKey(userID));
     if (pubKey == null) {
       CotterKeyPair cotterKeyPair = await this.generateKeys(userID);
-      pubKey = cotterKeyPair.getPublicKeyBase64();
+      pubKey = await cotterKeyPair.getPublicKeyBase64();
     }
     return pubKey;
   }
@@ -83,11 +83,12 @@ class Device {
     CotterKeyPair keyPair = await this.getKeyPair(user.id);
 
     try {
+      String pubKeyBase64 = await keyPair.getPublicKeyBase64();
       var resp = await api.updateMethodsWithCotterUserID(
         cotterUserID: user.id,
         method: TrustedDeviceMethod,
         enrolled: true,
-        code: keyPair.getPublicKeyBase64(),
+        code: pubKeyBase64,
         algorithm: TrustedDeviceAlgorithm,
       );
 
@@ -144,10 +145,11 @@ class Device {
     String stringToSign = ev.constructApprovedEventMsg();
     String signature =
         await Crypto.sign(message: stringToSign, cotterKeyPair: keyPair);
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
 
     Map<String, dynamic> req = await ev.constructApprovedEventJSON(
       codeOrSignature: signature,
-      publicKey: keyPair.getPublicKeyBase64(),
+      publicKey: pubKeyBase64,
       algorithm: TrustedDeviceAlgorithm,
     );
 
@@ -260,10 +262,12 @@ class Device {
     String signature =
         await Crypto.sign(message: stringToSign, cotterKeyPair: keyPair);
 
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
+
     Map<String, dynamic> req = await event.constructRespondEventJSON(
       method: TrustedDeviceMethod,
       codeOrSignature: signature,
-      publicKey: keyPair.getPublicKeyBase64(),
+      publicKey: pubKeyBase64,
       algorithm: TrustedDeviceAlgorithm,
     );
 
@@ -274,9 +278,11 @@ class Device {
   Future<bool> isThisDeviceTrusted({@required String cotterUserID}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(cotterUserID);
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
     return await api.checkEnrolledMethodWithCotterUserID(
-        cotterUserID: cotterUserID,
-        method: TrustedDeviceMethod,
-        pubKey: keyPair.getPublicKeyBase64());
+      cotterUserID: cotterUserID,
+      method: TrustedDeviceMethod,
+      pubKey: pubKeyBase64,
+    );
   }
 }

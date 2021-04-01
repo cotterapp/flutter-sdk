@@ -28,13 +28,13 @@ class API {
   /// Register a new user with specified identifier to Cotter.
   /// Duplicate identifier will result in an error.
   Future<User> registerUserToCotter(String identifier) async {
-    String url = '${Cotter.baseURL}/user/create';
+    final uri = Uri.parse('${Cotter.baseURL}/user/create');
     Map<String, dynamic> req = {
       "identifier": identifier,
     };
 
     final http.Response response =
-        await http.post(url, headers: this.headers(), body: jsonEncode(req));
+        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       User resp = User.fromJson(json.decode(response.body));
@@ -45,9 +45,9 @@ class API {
   }
 
   Future<User> getUserByIdentifier(String identifier) async {
-    String url =
-        '${Cotter.baseURL}/user?identifier=${Uri.encodeComponent(identifier)}';
-    final http.Response response = await http.get(url, headers: this.headers());
+    final uri = Uri.parse(
+        '${Cotter.baseURL}/user?identifier=${Uri.encodeComponent(identifier)}');
+    final http.Response response = await http.get(uri, headers: this.headers());
 
     if (response.statusCode == 200) {
       User resp = User.fromJson(json.decode(response.body));
@@ -122,8 +122,9 @@ class API {
       "current_code": currentCode,
     };
 
+    final uri = Uri.parse(url);
     final http.Response response =
-        await http.put(url, headers: this.headers(), body: jsonEncode(req));
+        await http.put(uri, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -165,7 +166,8 @@ class API {
 
   Future<bool> checkEnrolledMethod(
       {@required String url, @required String method}) async {
-    final http.Response response = await http.get(url, headers: this.headers());
+    final uri = Uri.parse(url);
+    final http.Response response = await http.get(uri, headers: this.headers());
 
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);
@@ -199,8 +201,9 @@ class API {
 
   Future<Map<String, dynamic>> createEventRequest(
       String path, Map<String, dynamic> req) async {
-    final http.Response response = await http.post("${Cotter.baseURL}$path",
-        headers: this.headers(), body: jsonEncode(req));
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response =
+        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -216,8 +219,9 @@ class API {
       'refresh_token': refreshToken,
     };
 
-    final http.Response response = await http.post("${Cotter.baseURL}$path",
-        headers: this.headers(), body: jsonEncode(req));
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response =
+        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       var resp = json.decode(response.body);
@@ -230,9 +234,8 @@ class API {
 
   Future<Map<String, dynamic>> getEvent(String eventID) async {
     var path = '/event/get/$eventID?oauth_token=true';
-
-    final http.Response response =
-        await http.get("${Cotter.baseURL}$path", headers: this.headers());
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response = await http.get(uri, headers: this.headers());
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -254,8 +257,8 @@ class API {
       throw "Cotter user ID and client user ID can't both be null, please specify one of them";
     }
 
-    final http.Response response =
-        await http.get("${Cotter.baseURL}$path", headers: this.headers());
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response = await http.get(uri, headers: this.headers());
 
     if (response.statusCode == 200) {
       var resp = json.decode(response.body);
@@ -285,8 +288,9 @@ class API {
       "redirect_url": redirectURL,
     };
 
-    final http.Response response = await http.post("${Cotter.baseURL}$path",
-        headers: this.headers(), body: jsonEncode(req));
+    final uri = Uri.parse("${Cotter.baseURL}$path");
+    final http.Response response =
+        await http.post(uri, headers: this.headers(), body: jsonEncode(req));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -325,7 +329,8 @@ class API {
   }
 
   Future<IPLocation> getIPAddress() async {
-    final http.Response response = await http.get('http://geoip-db.com/json/');
+    final uri = Uri.parse('http://geoip-db.com/json/');
+    final http.Response response = await http.get(uri);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> resp = json.decode(response.body);
