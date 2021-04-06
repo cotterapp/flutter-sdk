@@ -10,12 +10,12 @@ import 'package:cotter/src/helper/storage.dart';
 import 'package:flutter/material.dart';
 
 class User {
-  String id;
-  String issuer;
-  String clientUserID;
-  List<dynamic> enrolled;
-  String identifier;
-  Cotter cotter;
+  String? id;
+  String? issuer;
+  String? clientUserID;
+  List<dynamic>? enrolled;
+  String? identifier;
+  Cotter? cotter;
 
   User({
     this.id,
@@ -58,7 +58,7 @@ class User {
     await Storage.delete(key: LOGGED_IN_USER_KEY);
   }
 
-  static Future<User> getLoggedInUser({Cotter cotter}) async {
+  static Future<User> getLoggedInUser({Cotter? cotter}) async {
     var userStr = await Storage.read(key: LOGGED_IN_USER_KEY);
     if (userStr == null) {
       throw UserNotLoggedInException;
@@ -79,7 +79,7 @@ class User {
     return device.registerDevice(user: this);
   }
 
-  Future<Event> checkNewSignInRequest({@required BuildContext context}) {
+  Future<Event?> checkNewSignInRequest({required BuildContext context}) {
     Device device = new Device(apiKeyID: this.issuer);
     if (this.cotter == null) {
       throw "Cotter is not specified, either call `user = await cotter.getUser(); user.checkNewSignInRequest(context)` or `user.WithCotter(cotter).checkNewSignInRequest(context)`. This allows you to pass strings and colors into the Cotter object to be used in the approve sign in modal.";
@@ -88,7 +88,7 @@ class User {
         context: context, cotterUserID: this.id, cotter: this.cotter);
   }
 
-  Future<bool> isThisDeviceTrusted() async {
+  Future<bool?> isThisDeviceTrusted() async {
     Device device = new Device(apiKeyID: this.issuer);
     return await device.isThisDeviceTrusted(cotterUserID: this.id);
   }
@@ -96,27 +96,27 @@ class User {
   // ========= Authentication Methods: Email / Phone Based ==========
 
   /// Verify user email with OTP.
-  Future<User> verifyEmailWithOTP({@required String redirectURL}) {
+  Future<User> verifyEmailWithOTP({required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
-    return verify.verifyEmail(redirectURL: redirectURL, email: this.identifier);
+    return verify.verifyEmail(redirectURL: redirectURL, email: this.identifier!);
   }
 
   /// Verify user email with OTP via text messages (SMS).
-  Future<User> verifyPhoneWithOTPViaSMS({@required String redirectURL}) {
+  Future<User> verifyPhoneWithOTPViaSMS({required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
     return verify.verifyPhone(
       redirectURL: redirectURL,
-      phone: this.identifier,
+      phone: this.identifier!,
       channel: PhoneChannel.SMS,
     );
   }
 
   /// Verify user email with OTP via text messages (WhatsApp).
-  Future<User> verifyPhoneWithOTPViaWhatsApp({@required String redirectURL}) {
+  Future<User> verifyPhoneWithOTPViaWhatsApp({required String redirectURL}) {
     Verify verify = new Verify(apiKeyID: this.issuer);
     return verify.verifyPhone(
       redirectURL: redirectURL,
-      phone: this.identifier,
+      phone: this.identifier!,
       channel: PhoneChannel.WHATSAPP,
     );
   }

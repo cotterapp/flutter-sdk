@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class AuthRequest extends StatefulWidget {
   final Cotter cotter;
   AuthRequest({
-    @required this.cotter,
+    required this.cotter,
   }) {
     // strings = cotter.signInWithEmailUIStrings;
   }

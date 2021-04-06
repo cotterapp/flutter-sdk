@@ -1,48 +1,61 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:meta/meta.dart';
 import 'package:cryptography/cryptography.dart';
 
 class CotterKeyPair {
-  KeyPair keyPair;
+  late SimpleKeyPair keyPair;
+  static final type = KeyPairType.ed25519;
 
-  CotterKeyPair(keyPair) {
+  CotterKeyPair(SimpleKeyPair keyPair) {
     this.keyPair = keyPair;
   }
 
-  String getPublicKeyBase64() {
-    return base64Encode(keyPair.publicKey.bytes);
+  Future<String> getPublicKeyBase64() async {
+    final pubKey = await keyPair.extractPublicKey();
+    return base64Encode(pubKey.bytes);
   }
 
-  String getPrivateKeyBase64() {
-    return base64Encode(keyPair.privateKey.extractSync());
+  Future<String> getPrivateKeyBase64() async {
+    final bytes = await keyPair.extractPrivateKeyBytes();
+    return base64Encode(bytes);
   }
 
   static CotterKeyPair loadKeysFromString(
-      {@required String publicKey, @required String privateKey}) {
+      {required String publicKey, required String privateKey}) {
     List<int> publicKeyBytes = base64Decode(publicKey);
     List<int> privateKeyBytes = base64Decode(privateKey);
 
-    PublicKey pk = new PublicKey(publicKeyBytes);
-    PrivateKey sk = new PrivateKey(privateKeyBytes);
-    KeyPair keyPair = new KeyPair(privateKey: sk, publicKey: pk);
+    final pubKey = SimplePublicKey(
+      publicKeyBytes,
+      type: CotterKeyPair.type,
+    );
+
+    // PublicKey pk = new PublicKey(publicKeyBytes);
+    // PrivateKey sk = new PrivateKey(privateKeyBytes);
+    // KeyPair keyPair = new KeyPair(privateKey: sk, publicKey: pk);
+    SimpleKeyPair keyPair = new SimpleKeyPairData(
+      privateKeyBytes,
+      publicKey: Future.value(pubKey),
+      type: CotterKeyPair.type,
+    );
+
     return new CotterKeyPair(keyPair);
   }
 }
 
 class Crypto {
   static Future<CotterKeyPair> generateKeyPair() async {
-    final keyPair = await ed25519.newKeyPair();
+    final keyPair = await Ed25519().newKeyPair();
     return new CotterKeyPair(keyPair);
   }
 
   static Future<String> sign(
-      {@required String message, @required CotterKeyPair cotterKeyPair}) async {
+      {required String message, required CotterKeyPair cotterKeyPair}) async {
     KeyPair keyPair = cotterKeyPair.keyPair;
     List<int> messageBytes = utf8.encode(message);
-    Signature signature = await ed25519.sign(
+    Signature signature = await Ed25519().sign(
       messageBytes,
-      keyPair,
+      keyPair: keyPair,
     );
     return base64Encode(signature.bytes);
   }

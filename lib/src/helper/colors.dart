@@ -5,13 +5,13 @@ class CotterColors {
   static const Color defaultLight = Color(0x13000000);
   static const Color defaultDarker = Color(0x13000000);
   Color primary;
-  Color light;
-  Color darker;
-  Color error;
-  Color success;
-  Color text;
-  Color textInvert;
-  Color grey;
+  Color? light;
+  Color? darker;
+  Color? error;
+  Color? success;
+  Color? text;
+  Color? textInvert;
+  Color? grey;
   bool darkTheme;
 
   CotterColors({

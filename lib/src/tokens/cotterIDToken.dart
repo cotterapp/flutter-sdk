@@ -1,16 +1,15 @@
 import 'package:cotter/src/tokens/cotterJwtToken.dart';
-import 'package:flutter/material.dart';
 
 class CotterIDToken extends CotterJwtToken {
-  String token;
-  String clientUserID;
-  String authTime;
-  String identifier;
-  String type;
+  String? token;
+  String? clientUserID;
+  String? authTime;
+  String? identifier;
+  String? type;
 
-  CotterIDToken({@required this.token}) : super(token) {
+  CotterIDToken({required String this.token}) : super(token) {
     this.token = token;
-    var payload = CotterJwtToken.decodePayload(token);
+    var payload = CotterJwtToken.decodePayload(token!)!;
     this.payload = payload;
     this.clientUserID = payload["client_user_id"];
     this.authTime = payload["auth_time"];
@@ -18,19 +17,19 @@ class CotterIDToken extends CotterJwtToken {
     this.type = payload["type"];
   }
 
-  String getAuthTime() {
+  String? getAuthTime() {
     return this.authTime;
   }
 
-  String getIdentifier() {
+  String? getIdentifier() {
     return this.identifier;
   }
 
-  String getClientUserID() {
+  String? getClientUserID() {
     return this.clientUserID;
   }
 
-  String getTokenType() {
+  String? getTokenType() {
     return this.type;
   }
 }

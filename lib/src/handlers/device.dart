@@ -9,7 +9,6 @@ import 'package:cotter/src/tokens/oAuthToken.dart';
 import 'package:cotter/src/widgets/approveRequest.dart';
 import 'package:cotter/src/widgets/authRequest.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import 'package:cotter/src/helper/crypto.dart';
 import 'package:cotter/src/helper/storage.dart';
@@ -17,50 +16,52 @@ import 'package:cotter/src/helper/storage.dart';
 class Device {
   static final String _publicKey = "COTTER_DEVICE_PUBLIC_KEY";
   static final String _privateKey = "COTTER_DEVICE_PRIVATE_KEY";
-  String apiKeyID;
+  String? apiKeyID;
 
-  Device({@required this.apiKeyID});
+  Device({required this.apiKeyID});
 
-  String _getKeyStoreAliasPublicKey(String userID) {
+  String _getKeyStoreAliasPublicKey(String? userID) {
     if (userID == null) {
       throw "User ID is not specified, please specify user ID before calling other methods";
     }
-    return _publicKey + this.apiKeyID + userID;
+    return _publicKey + this.apiKeyID! + userID;
   }
 
-  String _getKeyStoreAliasPrivateKey(String userID) {
+  String _getKeyStoreAliasPrivateKey(String? userID) {
     if (userID == null) {
       throw "User ID is not specified, please specify user ID before calling other methods";
     }
-    return _privateKey + this.apiKeyID + userID;
+    return _privateKey + this.apiKeyID! + userID;
   }
 
-  _storeKeys(String pubKey, String privKey, String userID) async {
+  _storeKeys(String pubKey, String privKey, String? userID) async {
     await Storage.write(key: _getKeyStoreAliasPublicKey(userID), value: pubKey);
     await Storage.write(
         key: _getKeyStoreAliasPrivateKey(userID), value: privKey);
   }
 
-  Future<CotterKeyPair> generateKeys(String userID) async {
+  Future<CotterKeyPair> generateKeys(String? userID) async {
     CotterKeyPair cotterKeyPair = await Crypto.generateKeyPair();
-    String pubKey = cotterKeyPair.getPublicKeyBase64();
-    String privKey = cotterKeyPair.getPrivateKeyBase64();
+    String pubKey = await cotterKeyPair.getPublicKeyBase64();
+    String privKey = await cotterKeyPair.getPrivateKeyBase64();
     await this._storeKeys(pubKey, privKey, userID);
     return cotterKeyPair;
   }
 
   Future<String> getPublicKey(String userID) async {
-    String pubKey = await Storage.read(key: _getKeyStoreAliasPublicKey(userID));
+    String? pubKey =
+        await Storage.read(key: _getKeyStoreAliasPublicKey(userID));
     if (pubKey == null) {
       CotterKeyPair cotterKeyPair = await this.generateKeys(userID);
-      pubKey = cotterKeyPair.getPublicKeyBase64();
+      pubKey = await cotterKeyPair.getPublicKeyBase64();
     }
     return pubKey;
   }
 
-  Future<CotterKeyPair> getKeyPair(String userID) async {
-    String pubKey = await Storage.read(key: _getKeyStoreAliasPublicKey(userID));
-    String privKey =
+  Future<CotterKeyPair> getKeyPair(String? userID) async {
+    String? pubKey =
+        await Storage.read(key: _getKeyStoreAliasPublicKey(userID));
+    String? privKey =
         await Storage.read(key: _getKeyStoreAliasPrivateKey(userID));
     if (pubKey == null || privKey == null) {
       CotterKeyPair cotterKeyPair = await this.generateKeys(userID);
@@ -72,24 +73,25 @@ class Device {
     return cotterKeyPair;
   }
 
-  Future<User> signUpWithDevice({@required String identifier}) async {
+  Future<User> signUpWithDevice({required String identifier}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     User user = await api.registerUserToCotter(identifier);
     return await this.registerDevice(user: user);
   }
 
-  Future<User> registerDevice({@required User user}) async {
+  Future<User> registerDevice({required User user}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(user.id);
 
     try {
-      var resp = await api.updateMethodsWithCotterUserID(
+      String pubKeyBase64 = await keyPair.getPublicKeyBase64();
+      var resp = await (api.updateMethodsWithCotterUserID(
         cotterUserID: user.id,
         method: TrustedDeviceMethod,
         enrolled: true,
-        code: keyPair.getPublicKeyBase64(),
+        code: pubKeyBase64,
         algorithm: TrustedDeviceAlgorithm,
-      );
+      ) as FutureOr<Map<String, dynamic>>);
 
       user = User.fromJson(resp);
       OAuthToken oAuthToken = OAuthToken.fromJson(resp["oauth_token"]);
@@ -102,16 +104,16 @@ class Device {
   }
 
   Future<Event> signInWithDevice({
-    @required String identifier,
-    @required BuildContext context,
-    @required Cotter cotter,
+    required String identifier,
+    required BuildContext context,
+    required Cotter cotter,
   }) async {
     API api = new API(apiKeyID: this.apiKeyID);
     User user = await api.getUserByIdentifier(identifier);
     Event event;
 
-    var thisDeviceIsTrusted =
-        await this.isThisDeviceTrusted(cotterUserID: user.id);
+    var thisDeviceIsTrusted = await (this
+        .isThisDeviceTrusted(cotterUserID: user.id) as FutureOr<bool>);
 
     if (thisDeviceIsTrusted) {
       event = await this.authorizeDevice(cotterUserID: user.id);
@@ -122,13 +124,13 @@ class Device {
         cotter: cotter,
       );
     }
-    if (event.approved) {
+    if (event.approved!) {
       await user.store();
     }
     return event;
   }
 
-  Future<Event> authorizeDevice({@required String cotterUserID}) async {
+  Future<Event> authorizeDevice({required String? cotterUserID}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     String timestamp =
         (new DateTime.now().millisecondsSinceEpoch / 1000).round().toString();
@@ -144,14 +146,16 @@ class Device {
     String stringToSign = ev.constructApprovedEventMsg();
     String signature =
         await Crypto.sign(message: stringToSign, cotterKeyPair: keyPair);
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
 
     Map<String, dynamic> req = await ev.constructApprovedEventJSON(
       codeOrSignature: signature,
-      publicKey: keyPair.getPublicKeyBase64(),
+      publicKey: pubKeyBase64,
       algorithm: TrustedDeviceAlgorithm,
     );
 
-    Map<String, dynamic> resp = await api.createApprovedEventRequest(req);
+    Map<String, dynamic> resp = await (api.createApprovedEventRequest(req)
+        as FutureOr<Map<String, dynamic>>);
 
     Event event = Event.fromJson(resp);
     OAuthToken oAuthToken = OAuthToken.fromJson(resp["oauth_token"]);
@@ -160,9 +164,9 @@ class Device {
   }
 
   Future<Event> requestAuthentication(
-      {@required String cotterUserID,
-      @required BuildContext context,
-      @required Cotter cotter}) async {
+      {required String? cotterUserID,
+      required BuildContext context,
+      required Cotter cotter}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     String timestamp =
         (new DateTime.now().millisecondsSinceEpoch / 1000).round().toString();
@@ -177,10 +181,11 @@ class Device {
 
     Map<String, dynamic> req = await ev.constructPendingEventJSON();
 
-    Map<String, dynamic> resp = await api.createPendingEventRequest(req);
+    Map<String, dynamic> resp = await (api.createPendingEventRequest(req)
+        as FutureOr<Map<String, dynamic>>);
     Event event = Event.fromJson(resp);
 
-    if (!event.approved) {
+    if (!event.approved!) {
       Future<void> closed = showModalBottomSheet(
         backgroundColor: Colors.black26,
         context: context,
@@ -205,14 +210,15 @@ class Device {
   }
 
   Future<Event> pollGetEvent(
-      {@required Event event,
-      @required Canceler canceler,
-      @required Function onFinished}) async {
+      {required Event event,
+      required Canceler canceler,
+      required Function onFinished}) async {
     int tick = 0;
     Event ev = event;
-    while (tick < AuthRequestDuration && !canceler.canceled) {
+    while (tick < AuthRequestDuration && !canceler.canceled!) {
       API api = new API(apiKeyID: this.apiKeyID);
-      var resp = await api.getEvent(event.id.toString());
+      var resp = await (api.getEvent(event.id.toString())
+          as FutureOr<Map<String, dynamic>>);
       if (resp["approved"]) {
         ev = Event.fromJson(resp);
         OAuthToken oAuthToken = OAuthToken.fromJson(resp["oauth_token"]);
@@ -222,30 +228,30 @@ class Device {
       tick = tick + 1;
       await Future.delayed(new Duration(seconds: 1));
     }
-    if (!canceler.canceled) {
+    if (!canceler.canceled!) {
       onFinished();
     }
     return ev;
   }
 
-  Future<Event> checkNewSignInRequest(
-      {@required String cotterUserID,
-      @required BuildContext context,
-      @required Cotter cotter}) async {
+  Future<Event?> checkNewSignInRequest(
+      {required String? cotterUserID,
+      required BuildContext context,
+      required Cotter? cotter}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(cotterUserID);
-    var thisDeviceIsTrusted =
-        await this.isThisDeviceTrusted(cotterUserID: cotterUserID);
+    var thisDeviceIsTrusted = await (this
+        .isThisDeviceTrusted(cotterUserID: cotterUserID) as FutureOr<bool>);
     if (!thisDeviceIsTrusted) {
       throw "This is not a trusted device, you can only approve logins from a trusted device.";
     }
 
-    Event event = await api.checkNewEvent(cotterUserID: cotterUserID);
+    Event? event = await api.checkNewEvent(cotterUserID: cotterUserID);
 
     if (event == null) {
       return null;
     }
-    final bool approved = await Navigator.push(
+    final bool? approved = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ApproveRequest(
@@ -260,10 +266,12 @@ class Device {
     String signature =
         await Crypto.sign(message: stringToSign, cotterKeyPair: keyPair);
 
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
+
     Map<String, dynamic> req = await event.constructRespondEventJSON(
       method: TrustedDeviceMethod,
       codeOrSignature: signature,
-      publicKey: keyPair.getPublicKeyBase64(),
+      publicKey: pubKeyBase64,
       algorithm: TrustedDeviceAlgorithm,
     );
 
@@ -271,12 +279,14 @@ class Device {
     return event;
   }
 
-  Future<bool> isThisDeviceTrusted({@required String cotterUserID}) async {
+  Future<bool?> isThisDeviceTrusted({required String? cotterUserID}) async {
     API api = new API(apiKeyID: this.apiKeyID);
     CotterKeyPair keyPair = await this.getKeyPair(cotterUserID);
+    String pubKeyBase64 = await keyPair.getPublicKeyBase64();
     return await api.checkEnrolledMethodWithCotterUserID(
-        cotterUserID: cotterUserID,
-        method: TrustedDeviceMethod,
-        pubKey: keyPair.getPublicKeyBase64());
+      cotterUserID: cotterUserID,
+      method: TrustedDeviceMethod,
+      pubKey: pubKeyBase64,
+    );
   }
 }
