@@ -140,12 +140,10 @@ packages:
   flutter_web_auth:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "3208093977542a27a1f63f7a215ce21426e6fb2f"
-      url: "git@github.com:junying1/flutter_web_auth.git"
-    source: git
-    version: "0.2.4"
+      name: flutter_web_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   http:
     dependency: transitive
     description:
@@ -293,4 +291,4 @@ packages:
     version: "0.2.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.26.0-17.6.pre"
+  flutter: ">=2.0.0"
