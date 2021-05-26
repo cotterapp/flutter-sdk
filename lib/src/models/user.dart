@@ -67,7 +67,7 @@ class User {
     user.cotter = cotter;
     // if this fails, then the user is not logged-in
     // or the refresh token failed to refresh
-    await Token.getIDToken(user.issuer);
+    await Token.getIDToken(user.issuer!);
     return user;
   }
 
@@ -75,12 +75,12 @@ class User {
 
   // Sign up with this device, identifier can be user's email, phone, or any string to identify your user
   Future<User> registerDevice() {
-    Device device = new Device(apiKeyID: this.issuer);
+    Device device = new Device(apiKeyID: this.issuer!);
     return device.registerDevice(user: this);
   }
 
   Future<Event?> checkNewSignInRequest({required BuildContext context}) {
-    Device device = new Device(apiKeyID: this.issuer);
+    Device device = new Device(apiKeyID: this.issuer!);
     if (this.cotter == null) {
       throw "Cotter is not specified, either call `user = await cotter.getUser(); user.checkNewSignInRequest(context)` or `user.WithCotter(cotter).checkNewSignInRequest(context)`. This allows you to pass strings and colors into the Cotter object to be used in the approve sign in modal.";
     }
@@ -89,7 +89,7 @@ class User {
   }
 
   Future<bool?> isThisDeviceTrusted() async {
-    Device device = new Device(apiKeyID: this.issuer);
+    Device device = new Device(apiKeyID: this.issuer!);
     return await device.isThisDeviceTrusted(cotterUserID: this.id);
   }
 
@@ -97,13 +97,14 @@ class User {
 
   /// Verify user email with OTP.
   Future<User> verifyEmailWithOTP({required String redirectURL}) {
-    Verify verify = new Verify(apiKeyID: this.issuer);
-    return verify.verifyEmail(redirectURL: redirectURL, email: this.identifier!);
+    Verify verify = new Verify(apiKeyID: this.issuer!);
+    return verify.verifyEmail(
+        redirectURL: redirectURL, email: this.identifier!);
   }
 
   /// Verify user email with OTP via text messages (SMS).
   Future<User> verifyPhoneWithOTPViaSMS({required String redirectURL}) {
-    Verify verify = new Verify(apiKeyID: this.issuer);
+    Verify verify = new Verify(apiKeyID: this.issuer!);
     return verify.verifyPhone(
       redirectURL: redirectURL,
       phone: this.identifier!,
@@ -113,7 +114,7 @@ class User {
 
   /// Verify user email with OTP via text messages (WhatsApp).
   Future<User> verifyPhoneWithOTPViaWhatsApp({required String redirectURL}) {
-    Verify verify = new Verify(apiKeyID: this.issuer);
+    Verify verify = new Verify(apiKeyID: this.issuer!);
     return verify.verifyPhone(
       redirectURL: redirectURL,
       phone: this.identifier!,

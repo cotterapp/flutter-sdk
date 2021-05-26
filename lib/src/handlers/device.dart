@@ -16,7 +16,7 @@ import 'package:cotter/src/helper/storage.dart';
 class Device {
   static final String _publicKey = "COTTER_DEVICE_PUBLIC_KEY";
   static final String _privateKey = "COTTER_DEVICE_PRIVATE_KEY";
-  String? apiKeyID;
+  String apiKeyID;
 
   Device({required this.apiKeyID});
 
@@ -24,14 +24,14 @@ class Device {
     if (userID == null) {
       throw "User ID is not specified, please specify user ID before calling other methods";
     }
-    return _publicKey + this.apiKeyID! + userID;
+    return _publicKey + this.apiKeyID + userID;
   }
 
   String _getKeyStoreAliasPrivateKey(String? userID) {
     if (userID == null) {
       throw "User ID is not specified, please specify user ID before calling other methods";
     }
-    return _privateKey + this.apiKeyID! + userID;
+    return _privateKey + this.apiKeyID + userID;
   }
 
   _storeKeys(String pubKey, String privKey, String? userID) async {
