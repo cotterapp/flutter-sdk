@@ -18,7 +18,8 @@ class Token {
       await Storage.write(key: ACCESS_TOKEN_KEY, value: oAuthToken.accessToken);
       Token.accessToken = new CotterAccessToken(token: oAuthToken.accessToken!);
     }
-    if (oAuthToken.refreshToken != null && oAuthToken.refreshToken!.length > 0) {
+    if (oAuthToken.refreshToken != null &&
+        oAuthToken.refreshToken!.length > 0) {
       await Storage.write(
           key: REFRESH_TOKEN_KEY, value: oAuthToken.refreshToken);
     }
@@ -42,7 +43,7 @@ class Token {
     return Token.accessToken;
   }
 
-  static Future<CotterIDToken?> getIDToken(String? apiKeyID) async {
+  static Future<CotterIDToken?> getIDToken(String apiKeyID) async {
     if (Token.idToken == null) {
       var token = await Storage.read(key: ID_TOKEN_KEY);
       if (token != null) {
@@ -59,7 +60,7 @@ class Token {
   }
 
   static Future<void> refreshIfNeeded(
-      CotterJwtToken? token, String? apiKeyID) async {
+      CotterJwtToken? token, String apiKeyID) async {
     if (token == null || token.isExpired()) {
       var refreshToken = await Token.getRefreshToken();
       if (refreshToken == null) {

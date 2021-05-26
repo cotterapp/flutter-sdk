@@ -7,13 +7,12 @@ import 'package:cotter/src/helper/web_auth.dart';
 import 'package:cotter/src/tokens/oAuthToken.dart';
 
 class Verify {
-  String? apiKeyID;
+  String apiKeyID;
   String? state;
   String? codeVerifier;
   String? codeChallenge;
 
-  Verify({required String? apiKeyID}) {
-    this.apiKeyID = apiKeyID;
+  Verify({required this.apiKeyID}) {
     this.state = _generateState();
     var codeVerifier = RandomString.createCodeVerifier();
     this.codeVerifier = codeVerifier;
