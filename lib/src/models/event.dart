@@ -6,7 +6,7 @@ class Event {
   int? id;
   String? userID;
   String? clientUserID;
-  String? issuer;
+  String issuer;
   String? event;
   String? ip;
   String? location;
@@ -20,7 +20,7 @@ class Event {
     this.id,
     this.userID,
     this.clientUserID,
-    this.issuer,
+    required this.issuer,
     this.event,
     this.ip,
     this.location,
@@ -66,7 +66,7 @@ class Event {
   String toString() => jsonEncode(this.toJson());
 
   static Event createWithCotterUserID({
-    required String? apiKeyID,
+    required String apiKeyID,
     required String? cotterUserID,
     required String event,
     required String timestamp,

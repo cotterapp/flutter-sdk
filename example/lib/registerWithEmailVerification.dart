@@ -132,7 +132,7 @@ class InputFormState extends State<InputForm> {
       );
       print("RESULT EVENT");
       print(event);
-      if (event.approved) {
+      if (event.approved!) {
         _goToDashboard();
       }
     } catch (e) {
