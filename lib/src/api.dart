@@ -274,7 +274,7 @@ class API {
     }
   }
 
-  Future<Map<String, dynamic>?> getIdentity(
+  Future<Map<String, dynamic>> getIdentity(
     String? authCode,
     String? state,
     String challengeID,
@@ -297,7 +297,7 @@ class API {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      return _handleError(response) as FutureOr<Map<String, dynamic>?>;
+      return _handleError(response) as Future<Map<String, dynamic>>;
     }
   }
   // ========== HELPER METHODS ==========

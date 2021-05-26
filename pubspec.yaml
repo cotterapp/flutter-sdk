@@ -1,6 +1,6 @@
 name: cotter
 description: Flutter SDK for Cotter's Passwordless Authentication Service.
-version: 0.2.0-nullsafety.1
+version: 0.2.0-nullsafety.2
 homepage: https://www.cotter.app
 
 environment:

@@ -47,16 +47,16 @@ class Dashboard extends StatelessWidget {
 }
 
 class UserProfile extends StatefulWidget {
-  Cotter cotter;
+  Cotter? cotter;
   UserProfile({this.cotter});
   @override
   UserProfileState createState() => UserProfileState();
 }
 
 class UserProfileState extends State<UserProfile> {
-  User user;
+  User? user;
   bool loading = true;
-  String error;
+  String? error;
   String redirectURL = "myexample://auth_callback";
 
   void resetError() {
@@ -75,7 +75,7 @@ class UserProfileState extends State<UserProfile> {
   void getUser() async {
     resetError();
     try {
-      var usr = await widget.cotter.getUser();
+      var usr = await widget.cotter!.getUser();
       setState(() {
         user = usr;
         loading = false;
@@ -90,7 +90,7 @@ class UserProfileState extends State<UserProfile> {
 
   void verifyEmail() async {
     try {
-      user = await user.verifyEmailWithOTP(redirectURL: redirectURL);
+      user = await user!.verifyEmailWithOTP(redirectURL: redirectURL);
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -100,7 +100,7 @@ class UserProfileState extends State<UserProfile> {
 
   void verifyPhoneViaWhatsApp() async {
     try {
-      user = await user.verifyPhoneWithOTPViaWhatsApp(redirectURL: redirectURL);
+      user = await user!.verifyPhoneWithOTPViaWhatsApp(redirectURL: redirectURL);
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -127,11 +127,11 @@ class UserProfileState extends State<UserProfile> {
           Text(loading
               ? "loading..."
               : error != null
-                  ? error
+                  ? error!
                   : ""),
-          user != null ? Text("ID: ${user.id}") : Text(""),
-          user != null ? Text("Identifier: ${user.identifier}") : Text(""),
-          user != null ? Text("Issuer: ${user.issuer}") : Text(""),
+          user != null ? Text("ID: ${user!.id}") : Text(""),
+          user != null ? Text("Identifier: ${user!.identifier}") : Text(""),
+          user != null ? Text("Issuer: ${user!.issuer}") : Text(""),
           user == null ? Text("User is not logged in") : Text(""),
           Container(
             child: MaterialButton(
@@ -160,7 +160,7 @@ class UserProfileState extends State<UserProfile> {
 }
 
 class OAuthTokens extends StatefulWidget {
-  Cotter cotter;
+  Cotter? cotter;
   OAuthTokens({this.cotter});
   @override
   OAuthTokensState createState() => OAuthTokensState();
@@ -180,7 +180,7 @@ class OAuthTokensState extends State<OAuthTokens> {
   void getAccessToken() async {
     resetError();
     try {
-      var tok = await widget.cotter.getAccessToken();
+      var tok = await widget.cotter!.getAccessToken();
       setState(() {
         token = tok;
         tokenName = "Access Token";
@@ -195,7 +195,7 @@ class OAuthTokensState extends State<OAuthTokens> {
   void getIDToken() async {
     resetError();
     try {
-      var tok = await widget.cotter.getIDToken();
+      var tok = await widget.cotter!.getIDToken();
       setState(() {
         token = tok;
         tokenName = "ID Token";
@@ -210,7 +210,7 @@ class OAuthTokensState extends State<OAuthTokens> {
   void getRefreshToken() async {
     resetError();
     try {
-      var tok = await widget.cotter.getRefreshToken();
+      var tok = await widget.cotter!.getRefreshToken();
       setState(() {
         token = tok;
         tokenName = "Refresh Token";
@@ -224,7 +224,7 @@ class OAuthTokensState extends State<OAuthTokens> {
 
   void logOut() async {
     resetError();
-    await widget.cotter.logOut();
+    await widget.cotter!.logOut();
     _goToHome();
   }
 
@@ -330,15 +330,15 @@ class OAuthTokensState extends State<OAuthTokens> {
 }
 
 class Settings extends StatefulWidget {
-  Cotter cotter;
+  Cotter? cotter;
   Settings({this.cotter});
   @override
   SettingsState createState() => SettingsState();
 }
 
 class SettingsState extends State<Settings> {
-  User user;
-  bool thisDeviceIsTrusted = false;
+  late User user;
+  bool? thisDeviceIsTrusted = false;
   String error = "";
 
   @override
@@ -356,7 +356,7 @@ class SettingsState extends State<Settings> {
   void getUser() async {
     resetError();
     try {
-      var usr = await widget.cotter.getUser();
+      var usr = await widget.cotter!.getUser();
       print(usr);
       var trusted = await usr.isThisDeviceTrusted();
       setState(() {
@@ -373,7 +373,7 @@ class SettingsState extends State<Settings> {
 
   checkLoginRequest(BuildContext context) async {
     try {
-      Event event = await user.checkNewSignInRequest(context: context);
+      Event? event = await user.checkNewSignInRequest(context: context);
       print(event);
     } catch (e) {
       print(e);
@@ -403,7 +403,7 @@ class SettingsState extends State<Settings> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: thisDeviceIsTrusted
+                children: thisDeviceIsTrusted!
                     ? [
                         Text(
                           "Approve Login Request",
